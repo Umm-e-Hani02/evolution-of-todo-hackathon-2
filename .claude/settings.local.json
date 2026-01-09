@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git clone https://github.com/Umm-e-Hani02/evolution-of-todo-hackathon-2.git)"
+    ]
+  }
+}

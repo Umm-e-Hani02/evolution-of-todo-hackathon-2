@@ -50,4 +50,4 @@ logs/
 **/.pytest_cache/**
 **/.next/**
 **/test.db
-**/*.log
+**/*.logevolution-of-todo-hackathon-2/
