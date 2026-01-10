@@ -4,20 +4,21 @@ This module provides functions for displaying the main menu and
 getting validated user input for menu choices.
 """
 
-from .colors import BOLD, PRIMARY, SECONDARY, ACCENT, SUCCESS, ERROR, WARNING, MUTED, BORDER, RESET
+from .colors import BOLD, PINK, SECONDARY, ACCENT, SUCCESS, ERROR, WARNING, MUTED, BORDER, RESET
 
 
 def display_menu() -> None:
     """Display the main application menu with numbered options."""
-    print(f"\n  {BOLD}{PRIMARY}Menu{RESET}")
-    print(f"  {BORDER}{'-' * 16}{RESET}")
-    print(f"  {SECONDARY}1.{RESET}  Add Task")
-    print(f"  {ACCENT}2.{RESET}  View Tasks")
-    print(f"  {WARNING}3.{RESET}  Update Task")
-    print(f"  {ERROR}4.{RESET}  Delete Task")
-    print(f"  {ACCENT}5.{RESET}  Mark Complete")
-    print(f"  {MUTED}6.{RESET}  Exit")
-    print(f"  {BORDER}{'-' * 16}{RESET}")
+    print(f"\n  {BOLD}{PINK}Menu{RESET}")
+    print(f"  {MUTED}{'-' * 20}{RESET}")
+    print(f"  {SECONDARY}1){RESET} Add Task")
+    print(f"  {ACCENT}2){RESET} View Tasks")
+    print(f"  {WARNING}3){RESET} Update Task")
+    print(f"  {ERROR}4){RESET} Delete Task")
+    print(f"  {ACCENT}5){RESET} Mark Complete")
+    print(f"  {MUTED}6){RESET} Exit")
+    print(f"  {MUTED}{'-' * 20}{RESET}")
+    print()
 
 
 def get_menu_choice() -> int:
