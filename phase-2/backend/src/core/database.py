@@ -46,8 +46,16 @@ def create_database_engine():
         else:
             corrected_url = database_url
 
+        # Remove unsupported channel_binding parameter that causes connection errors
+        if "channel_binding=" in corrected_url:
+            import re
+            # Remove the channel_binding parameter and its value
+            corrected_url = re.sub(r'[&\?]channel_binding=[^&]*', '', corrected_url)
+            # Clean up any double ampersands or question marks that might result
+            corrected_url = corrected_url.replace('&&', '&').replace('?&', '?')
+
         return create_engine(
-            corrected_url,  # Use the corrected URL with proper driver
+            corrected_url,  # Use the corrected URL with proper driver and no unsupported params
             echo=settings.debug,
             # PostgreSQL-specific options for production
             pool_pre_ping=True,
