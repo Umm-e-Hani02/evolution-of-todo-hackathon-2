@@ -39,8 +39,15 @@ def create_database_engine():
         # PostgreSQL configuration for production - use cleaned URL
         print("Using PostgreSQL for production")
 
+        # Ensure the URL specifies the psycopg driver if not already specified
+        if database_url.startswith("postgresql://") and "+psycopg" not in database_url:
+            # Replace postgresql:// with postgresql+psycopg:// to force the correct driver
+            corrected_url = database_url.replace("postgresql://", "postgresql+psycopg://", 1)
+        else:
+            corrected_url = database_url
+
         return create_engine(
-            database_url,  # Use the cleaned URL
+            corrected_url,  # Use the corrected URL with proper driver
             echo=settings.debug,
             # PostgreSQL-specific options for production
             pool_pre_ping=True,
