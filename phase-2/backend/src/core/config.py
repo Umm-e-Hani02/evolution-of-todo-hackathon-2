@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     debug: bool = False
 
     # CORS
-    cors_origins: str = "http://localhost:3000"
+    cors_origins: str = "http://localhost:3000,http://localhost:3001,https://*.vercel.app,https://*.netlify.app,http://127.0.0.1:3000,http://127.0.0.1:3001"
 
     class Config:
         env_file = ".env"

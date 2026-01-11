@@ -3,11 +3,13 @@ from sqlmodel import SQLModel, create_engine, Session, select
 from src.core.config import settings
 
 # Create SQLModel engine
-# Use SQLite for testing to avoid PostgreSQL dependency issues
+# Use PostgreSQL in production, SQLite for local testing
 engine = create_engine(
-    "sqlite:///./test.db",
+    settings.database_url,
     echo=settings.debug,
-    connect_args={"check_same_thread": False}  # Needed for SQLite
+    # Additional PostgreSQL-specific options
+    pool_pre_ping=True,
+    pool_recycle=300,
 )
 
 

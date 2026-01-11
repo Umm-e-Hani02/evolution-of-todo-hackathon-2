@@ -1,9 +1,10 @@
 """FastAPI application entry point."""
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from sqlmodel import Session
 from src.core.config import settings
-from src.core.database import init_db
+from src.core.database import init_db, get_db
 from src.api import auth, todos
 
 @asynccontextmanager
@@ -41,6 +42,16 @@ app.include_router(todos.router)
 def health_check() -> dict:
     """Health check endpoint."""
     return {"status": "healthy", "version": "1.0.0"}
+
+@app.get("/ready", tags=["Health"])
+def readiness_check(db: Session = Depends(get_db)) -> dict:
+    """Readiness check endpoint that verifies database connectivity."""
+    try:
+        # Test database connectivity
+        db.execute("SELECT 1")
+        return {"status": "ready", "database": "connected", "version": "1.0.0"}
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Database not ready: {str(e)}")
 
 
 @app.get("/", tags=["Root"])
