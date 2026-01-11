@@ -19,8 +19,8 @@ class Settings(BaseSettings):
     port: int = 8000
     debug: bool = False
 
-    # CORS
-    cors_origins: str = "http://localhost:3000,http://localhost:3001,https://*.vercel.app,https://*.netlify.app,http://127.0.0.1:3000,http://127.0.0.1:3001"
+    # CORS - defaults include common development and production origins
+    cors_origins: str = "http://localhost:3000,http://localhost:3001,https://*.vercel.app,https://*.netlify.app,http://127.0.0.1:3000,http://127.0.0.1:3001,https://phase2-evolution-of-todo.vercel.app"
 
     class Config:
         env_file = ".env"
