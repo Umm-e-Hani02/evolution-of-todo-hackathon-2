@@ -24,32 +24,18 @@ def create_database_engine():
             connect_args={"check_same_thread": False}  # Needed for SQLite
         )
     else:
-        # PostgreSQL configuration for production
+        # PostgreSQL configuration for production - use URL as-is
         print("Using PostgreSQL for production")
 
-        # Enhance the database URL with proper SSL settings if not present
-        enhanced_url = database_url
-        if "sslmode" not in database_url.lower():
-            if "?" in database_url:
-                enhanced_url = f"{database_url}&sslmode=require"
-            else:
-                enhanced_url = f"{database_url}?sslmode=require"
-
-        print(f"Enhanced database URL: {enhanced_url[:50]}...")
-
         return create_engine(
-            enhanced_url,
+            database_url,  # Use the URL exactly as provided
             echo=settings.debug,
             # PostgreSQL-specific options for production
             pool_pre_ping=True,
             pool_recycle=300,
             pool_size=5,  # Reduced for Railway free tier
             max_overflow=10,
-            # Handle SSL properly for cloud databases like Neon/Railway
-            connect_args={
-                "connect_timeout": 30,  # Increased timeout for Railway
-                "sslmode": "require"
-            }
+            # Use connection parameters from the URL
         )
 
 # Create SQLModel engine
