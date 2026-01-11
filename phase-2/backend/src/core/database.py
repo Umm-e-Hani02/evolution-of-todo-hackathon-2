@@ -8,7 +8,19 @@ import logging
 
 def create_database_engine():
     """Create database engine with appropriate settings based on URL scheme."""
-    database_url = settings.database_url
+    # Clean the database URL by removing any shell command prefixes like "psql '"
+    raw_database_url = settings.database_url
+    database_url = raw_database_url.strip()
+
+    # Remove common shell command prefixes that might be accidentally included
+    if database_url.startswith("psql '"):
+        database_url = database_url[6:]  # Remove "psql '" prefix
+    elif database_url.startswith("psql \""):
+        database_url = database_url[6:]  # Remove 'psql "' prefix
+    elif database_url.startswith("'") and database_url.endswith("'"):
+        database_url = database_url[1:-1]  # Remove surrounding quotes
+    elif database_url.startswith('"') and database_url.endswith('"'):
+        database_url = database_url[1:-1]  # Remove surrounding quotes
 
     print(f"Attempting to connect to database: {database_url[:50]}...")
 
@@ -24,11 +36,11 @@ def create_database_engine():
             connect_args={"check_same_thread": False}  # Needed for SQLite
         )
     else:
-        # PostgreSQL configuration for production - use URL as-is
+        # PostgreSQL configuration for production - use cleaned URL
         print("Using PostgreSQL for production")
 
         return create_engine(
-            database_url,  # Use the URL exactly as provided
+            database_url,  # Use the cleaned URL
             echo=settings.debug,
             # PostgreSQL-specific options for production
             pool_pre_ping=True,
