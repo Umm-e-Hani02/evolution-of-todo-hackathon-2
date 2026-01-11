@@ -10,7 +10,23 @@ from src.api import auth, todos
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan events."""
-    init_db()
+    try:
+        # Test database connectivity before initializing tables
+        from sqlalchemy import text
+        from sqlmodel import select
+        from src.models.user import User
+
+        # Create a temporary session to test the connection
+        with Session(engine) as session:
+            # Just test the connection by executing a simple raw SQL query
+            session.exec(text("SELECT 1"))
+            print("Database connection test successful")
+
+        init_db()
+        print("Database initialized successfully")
+    except Exception as e:
+        print(f"Error initializing database: {e}")
+        raise
     yield
 
 # Create FastAPI application

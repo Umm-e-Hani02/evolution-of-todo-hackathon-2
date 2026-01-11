@@ -6,8 +6,8 @@ from functools import lru_cache
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
-    # Database
-    database_url: str = "postgresql://user:password@localhost:5432/todo_db"
+    # Database - defaults to SQLite for local development
+    database_url: str = "sqlite:///./local.db"
 
     # JWT
     jwt_secret: str = "change-this-secret-in-production"
