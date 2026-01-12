@@ -19,6 +19,7 @@ async def lifespan(app: FastAPI):
     yield
 
 # Create FastAPI application
+print("Creating FastAPI application...")
 app = FastAPI(
     title="Todo API - Phase II",
     description="REST API for multi-user todo application with JWT authentication",
@@ -27,6 +28,7 @@ app = FastAPI(
     redoc_url="/redoc",
     lifespan=lifespan
 )
+print("FastAPI application created successfully")
 
 # Configure CORS
 cors_origins = [origin.strip() for origin in settings.cors_origins.split(",")]
@@ -40,8 +42,11 @@ app.add_middleware(
 )
 
 # Include routers
+print("Including auth router...")
 app.include_router(auth.router)
+print("Including todos router...")
 app.include_router(todos.router)
+print("Routers included successfully")
 
 
 @app.get("/health", tags=["Health"])
