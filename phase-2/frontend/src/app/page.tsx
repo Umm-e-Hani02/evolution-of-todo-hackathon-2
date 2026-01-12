@@ -28,7 +28,9 @@ export default function Home() {
     <div className="landing-page">
       <header className="landing-header">
         <div className="landing-nav">
-          <h1 className="landing-logo">TodoPro</h1>
+          <div className="landing-logo">
+            <img src="/todopro-logo.svg" alt="TodoPro Logo" width="120" height="36" />
+          </div>
           <div className="landing-nav-actions">
             <Link href="/login" className="btn btn-secondary">
               Sign In

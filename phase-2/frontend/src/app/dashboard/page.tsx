@@ -11,7 +11,17 @@ import ThemeToggleButton from "@/components/ui/ThemeToggleButton";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { logout, user } = useAuth();
+  const { logout, user, isAuthenticated, isLoading: authLoading } = useAuth();
+
+  // If user is not authenticated, redirect to login
+  if (!authLoading && !isAuthenticated) {
+    // We can't use router.push here in the same render cycle,
+    // so we'll handle the redirect in a useEffect or return early
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login';
+    }
+    return null;
+  }
   const [todos, setTodos] = useState<TodoTask[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -115,7 +125,9 @@ export default function DashboardPage() {
       <div className="dashboard-layout">
         <nav className="navbar">
           <div className="navbar-brand">
-            <h2>TodoPro</h2>
+            <div className="navbar-logo">
+  <img src="/todopro-logo.svg" alt="TodoPro Logo" width="100" height="30" />
+</div>
           </div>
           <div className="navbar-user">
             <span className="user-email">{user?.email}</span>
@@ -136,7 +148,9 @@ export default function DashboardPage() {
     <div className="dashboard-layout">
       <nav className="navbar">
         <div className="navbar-brand">
-          <h2>TodoPro</h2>
+          <div className="navbar-logo">
+  <img src="/todopro-logo.svg" alt="TodoPro Logo" width="100" height="30" />
+</div>
         </div>
         <div className="navbar-user">
           <span className="user-email">{user?.email}</span>

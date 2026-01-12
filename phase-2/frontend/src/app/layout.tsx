@@ -9,6 +9,9 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'TodoPro - Professional Task Management',
   description: 'Secure, multi-user task management platform with advanced features',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

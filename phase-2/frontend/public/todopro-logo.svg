@@ -1,0 +1,14 @@
+<svg width="200" height="60" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .logo-text { fill: #ff69b4; font-family: Arial, sans-serif; font-size: 24px; font-weight: bold; }
+    .check-icon { fill: #ff69b4; }
+  </style>
+  <!-- Checkmark icon -->
+  <g transform="translate(10, 15)">
+    <rect x="0" y="0" width="30" height="30" rx="6" fill="#fff" stroke="#ff69b4" stroke-width="2"/>
+    <path class="check-icon" d="M8 15L13 20L22 10" stroke="#ff69b4" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Text -->
+  <text x="50" y="35" class="logo-text">TodoPro</text>
+</svg>
