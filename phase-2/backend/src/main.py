@@ -48,8 +48,6 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],  # Explicitly include OPTIONS
     allow_headers=["*"],
-    # Allow credentials to be sent with CORS requests
-    allow_credentials=True,
     # Expose headers that browsers can access
     expose_headers=["Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"]
 )
