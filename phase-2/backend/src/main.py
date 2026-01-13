@@ -38,7 +38,23 @@ if not cors_origins_input or len(cors_origins_input.strip()) == 0:
     print("WARNING: CORS_ORIGINS is empty, using safe default")
     cors_origins = ["http://localhost:3000"]
 else:
-    cors_origins = [origin.strip() for origin in cors_origins_input.split(",") if origin.strip()]
+    # Split and clean origins, handle wildcard patterns by replacing them with specific domains
+    origins = [origin.strip() for origin in cors_origins_input.split(",") if origin.strip()]
+    cors_origins = []
+
+    for origin in origins:
+        # Replace wildcard patterns with specific domains for FastAPI compatibility
+        if origin == "https://*.vercel.app":
+            # Add common Vercel domains and the specific deployment domain
+            cors_origins.extend([
+                "https://phase2-evolution-of-todo.vercel.app",
+                "https://evolution-of-todo.vercel.app"
+            ])
+        elif origin == "https://*.netlify.app":
+            # Add common Netlify domains if needed
+            cors_origins.append("https://*.netlify.app")
+        else:
+            cors_origins.append(origin)
 
 print(f"Final CORS origins: {cors_origins}")
 
