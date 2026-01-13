@@ -735,6 +735,38 @@ body[data-theme="light"] .navbar {
   text-decoration: none;
 }
 
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-logo img {
+  max-height: 40px;
+  width: auto;
+  vertical-align: middle;
+}
+
+.navbar-logo h1 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--dark-accent-start);
+  letter-spacing: -0.025em;
+  background: var(--dark-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body[data-theme="light"] .navbar-logo h1 {
+  color: var(--light-accent-start);
+  background: var(--light-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 body[data-theme="light"] .navbar-brand {
   color: var(--light-text-primary);
 }
@@ -868,6 +900,27 @@ body[data-theme="light"] .empty-state p {
 }
 
 .landing-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--dark-accent-start);
+  letter-spacing: -0.025em;
+  background: var(--dark-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.landing-logo img {
+  max-height: 40px;
+  width: auto;
+  vertical-align: middle;
+}
+
+.landing-logo h1 {
+  margin: 0;
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--dark-accent-start);
@@ -879,6 +932,14 @@ body[data-theme="light"] .empty-state p {
 }
 
 body[data-theme="light"] .landing-logo {
+  color: var(--light-accent-start);
+  background: var(--light-accent);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+body[data-theme="light"] .landing-logo h1 {
   color: var(--light-accent-start);
   background: var(--light-accent);
   -webkit-background-clip: text;

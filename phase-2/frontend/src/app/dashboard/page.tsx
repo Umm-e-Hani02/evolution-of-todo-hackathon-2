@@ -126,7 +126,8 @@ export default function DashboardPage() {
         <nav className="navbar">
           <div className="navbar-brand">
             <div className="navbar-logo">
-  <img src="/todopro-logo.svg" alt="TodoPro Logo" width="100" height="30" />
+  <img src="/todopro-logo.png" alt="TodoPro Logo" width="40" height="40" />
+  <h1>TodoPro</h1>
 </div>
           </div>
           <div className="navbar-user">
@@ -149,7 +150,8 @@ export default function DashboardPage() {
       <nav className="navbar">
         <div className="navbar-brand">
           <div className="navbar-logo">
-  <img src="/todopro-logo.svg" alt="TodoPro Logo" width="100" height="30" />
+  <img src="/todopro-logo.png" alt="TodoPro Logo" width="40" height="40" />
+  <h1>TodoPro</h1>
 </div>
         </div>
         <div className="navbar-user">

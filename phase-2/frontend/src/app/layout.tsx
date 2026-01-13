@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: 'TodoPro - Professional Task Management',
   description: 'Secure, multi-user task management platform with advanced features',
   icons: {
-    icon: '/favicon.svg',
+    icon: '/todopro-logo.png',
   },
 };
 
