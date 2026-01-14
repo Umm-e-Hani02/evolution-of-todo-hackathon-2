@@ -375,4 +375,4 @@ See `phase-1-cli/src/models/task.py` for the full implementation of the Task ent
 
 **Dependencies**: None (Python standard library only)
 
-**Testing**: Manual REPL testing per acceptance scenarios in `specs/001-cli-todo/spec.md`
+**Testing**: Manual REPL testing per acceptance scenarios in `specs/spec.md`

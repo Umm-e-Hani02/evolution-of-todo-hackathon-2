@@ -105,7 +105,7 @@ npm test
 ## Project Structure
 
 ```
-phase-2/
+phase-2-web/
 ├── backend/
 │   ├── src/
 │   │   ├── main.py           # FastAPI entry point
@@ -144,7 +144,7 @@ phase-2/
 
 ## References
 
-- [Specification](../specs/002-web-todo-auth/spec.md)
-- [Implementation Plan](../specs/002-web-todo-auth/plan.md)
-- [Task List](../specs/002-web-todo-auth/tasks.md)
+- [Specification](./specs/spec.md)
+- [Implementation Plan](./specs/plan.md)
+- [Task List](./specs/tasks.md)
 - [Constitution](../.specify/memory/constitution.md)

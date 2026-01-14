@@ -450,7 +450,7 @@ uv run src/main.py
 Phase I uses **manual acceptance testing** (automated tests in Phase II).
 
 **Test Procedure**:
-1. Review acceptance scenarios in `specs/001-cli-todo/spec.md`
+1. Review acceptance scenarios in `specs/spec.md`
 2. Execute test steps from `phase-1-cli/tests/acceptance_tests.md`
 3. Verify expected outcomes match actual results
 
@@ -515,17 +515,17 @@ phase-1-cli/
 After successfully running Phase I:
 
 1. **Explore the Code**: Review `src/` directory to understand implementation
-2. **Read Documentation**: See `specs/001-cli-todo/` for detailed design docs
+2. **Read Documentation**: See `specs/` for detailed design docs
 3. **Run Acceptance Tests**: Execute test scenarios from `tests/acceptance_tests.md`
 4. **Prepare for Phase II**: Review Phase II requirements (web application with database)
 
 ## Support and Resources
 
 **Documentation**:
-- Feature Specification: `specs/001-cli-todo/spec.md`
-- Implementation Plan: `specs/001-cli-todo/plan.md`
-- Data Model: `specs/001-cli-todo/data-model.md`
-- Service Contract: `specs/001-cli-todo/contracts/todo_service.md`
+- Feature Specification: `specs/spec.md`
+- Implementation Plan: `specs/plan.md`
+- Data Model: `specs/data-model.md`
+- Service Contract: `specs/contracts/todo_service.md`
 
 **Project Links**:
 - Repository: `evolution-of-todo/` (root)

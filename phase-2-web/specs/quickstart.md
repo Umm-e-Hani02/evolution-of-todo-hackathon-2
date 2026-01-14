@@ -17,7 +17,7 @@
 
 ```bash
 git checkout 002-web-todo-auth
-cd phase-2
+cd phase-2-web
 ```
 
 ### 2. Backend Setup
@@ -188,7 +188,7 @@ npm test
 ## Project Structure
 
 ```
-phase-2/
+phase-2-web/
 ├── backend/
 │   ├── src/
 │   │   ├── main.py           # FastAPI app

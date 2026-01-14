@@ -2,7 +2,7 @@
 
 **Feature**: 001-cli-todo
 **Branch**: `001-cli-todo`
-**Input**: Implementation plan from `/specs/001-cli-todo/plan.md`
+**Input**: Implementation plan from `/specs/plan.md`
 **Prerequisites**: spec.md (complete), plan.md (complete), research.md, data-model.md, contracts/
 
 ## Format: `[ID] [P?] [Phase] Description`

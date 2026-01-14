@@ -16,7 +16,7 @@ This is Phase I of the Evolution of Todo project, demonstrating the foundational
 
 ## Setup & Usage
 
-See [quickstart.md](../specs/001-cli-todo/quickstart.md) in the specs directory for detailed setup instructions.
+See [quickstart.md](./specs/quickstart.md) in the specs directory for detailed setup instructions.
 
 **Quick Start**:
 ```bash
@@ -67,4 +67,4 @@ phase-1-cli/
 - CLI layer: Menu system and command handlers
 - Main: Application loop and coordination
 
-For detailed implementation documentation, see the `specs/001-cli-todo/` directory.
+For detailed implementation documentation, see the `specs/` directory.

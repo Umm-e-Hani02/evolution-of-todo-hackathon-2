@@ -1,7 +1,7 @@
 # Implementation Plan: In-Memory Python Console Todo Application
 
 **Branch**: `001-cli-todo` | **Date**: 2026-01-03 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification from `/specs/001-cli-todo/spec.md`
+**Input**: Feature specification from `./spec.md`
 
 ## Summary
 
@@ -64,7 +64,7 @@ Build a console-based Todo application in Python that manages tasks entirely in 
 ### Documentation (this feature)
 
 ```text
-specs/001-cli-todo/
+specs/
 ├── spec.md              # Feature requirements and user stories
 ├── plan.md              # This file (/sp.plan command output)
 ├── research.md          # Phase 0 output (technical research)

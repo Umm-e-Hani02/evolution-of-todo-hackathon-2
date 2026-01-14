@@ -1,6 +1,6 @@
 # Tasks: Full-Stack Multi-User Todo Web Application
 
-**Input**: Design documents from `/specs/002-web-todo-auth/`
+**Input**: Design documents from `/specs/`
 **Prerequisites**: plan.md (completed), spec.md (completed), data-model.md, contracts/openapi.yaml
 
 **Organization**: Tasks are grouped by user story to enable independent implementation and testing of each story.
@@ -17,7 +17,7 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create phase-2/ directory structure per plan.md
+- [ ] T001 Create phase-2-web/ directory structure per plan.md
 - [ ] T002 [P] Initialize backend project with Python 3.13+ and FastAPI dependencies
 - [ ] T003 [P] Initialize frontend project with Next.js 15+ and TypeScript
 - [ ] T004 Create .env.example with JWT_SECRET, DATABASE_URL, and frontend API URL
@@ -33,22 +33,22 @@
 
 ### Database Foundation
 
-- [ ] T006 Create SQLModel User entity in `phase-2/backend/src/models/user.py` (FR-001)
-- [ ] T007 Create SQLModel TodoTask entity in `phase-2/backend/src/models/todo.py` (FR-004, FR-007)
-- [ ] T008 [P] Implement database connection module in `phase-2/backend/src/core/database.py` (FR-009)
+- [ ] T006 Create SQLModel User entity in `phase-2-web/backend/src/models/user.py` (FR-001)
+- [ ] T007 Create SQLModel TodoTask entity in `phase-2-web/backend/src/models/todo.py` (FR-004, FR-007)
+- [ ] T008 [P] Implement database connection module in `phase-2-web/backend/src/core/database.py` (FR-009)
 - [ ] T009 Create database initialization script for schema creation
 
 ### Security Foundation
 
-- [ ] T010 Implement password hashing functions (bcrypt) in `phase-2/backend/src/core/security.py` (FR-001)
-- [ ] T011 Implement JWT encode/decode functions in `phase-2/backend/src/core/security.py` (FR-002)
-- [ ] T012 [P] Create environment configuration in `phase-2/backend/src/core/config.py` (FR-012)
+- [ ] T010 Implement password hashing functions (bcrypt) in `phase-2-web/backend/src/core/security.py` (FR-001)
+- [ ] T011 Implement JWT encode/decode functions in `phase-2-web/backend/src/core/security.py` (FR-002)
+- [ ] T012 [P] Create environment configuration in `phase-2-web/backend/src/core/config.py` (FR-012)
 
 ### API Foundation
 
-- [ ] T013 Create FastAPI application entry point in `phase-2/backend/src/main.py`
-- [ ] T014 [P] Create Pydantic request/response schemas in `phase-2/backend/src/schemas/user.py` and `todo.py`
-- [ ] T015 Implement JWT authentication dependency in `phase-2/backend/src/deps.py` (FR-002, FR-003)
+- [ ] T013 Create FastAPI application entry point in `phase-2-web/backend/src/main.py`
+- [ ] T014 [P] Create Pydantic request/response schemas in `phase-2-web/backend/src/schemas/user.py` and `todo.py`
+- [ ] T015 Implement JWT authentication dependency in `phase-2-web/backend/src/deps.py` (FR-002, FR-003)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -62,28 +62,28 @@
 
 ### Backend Implementation
 
-- [ ] T016 [US1] Implement POST /auth/register endpoint in `phase-2/backend/src/api/auth.py` (FR-001)
-- [ ] T017 [US1] Implement POST /auth/login endpoint in `phase-2/backend/src/api/auth.py` (FR-002)
-- [ ] T018 [US1] Implement GET /auth/me endpoint in `phase-2/backend/src/api/auth.py` (FR-002)
+- [ ] T016 [US1] Implement POST /auth/register endpoint in `phase-2-web/backend/src/api/auth.py` (FR-001)
+- [ ] T017 [US1] Implement POST /auth/login endpoint in `phase-2-web/backend/src/api/auth.py` (FR-002)
+- [ ] T018 [US1] Implement GET /auth/me endpoint in `phase-2-web/backend/src/api/auth.py` (FR-002)
 - [ ] T019 [US1] Add email uniqueness validation on registration (FR-001)
 
 ### Backend Tests
 
-- [ ] T020 [US1] Contract test for POST /auth/register in `phase-2/backend/tests/test_auth.py`
-- [ ] T021 [US1] Contract test for POST /auth/login in `phase-2/backend/tests/test_auth.py`
-- [ ] T022 [US1] Contract test for GET /auth/me in `phase-2/backend/tests/test_auth.py`
-- [ ] T023 [US1] Test invalid credentials rejection in `phase-2/backend/tests/test_auth.py` (FR-002)
+- [ ] T020 [US1] Contract test for POST /auth/register in `phase-2-web/backend/tests/test_auth.py`
+- [ ] T021 [US1] Contract test for POST /auth/login in `phase-2-web/backend/tests/test_auth.py`
+- [ ] T022 [US1] Contract test for GET /auth/me in `phase-2-web/backend/tests/test_auth.py`
+- [ ] T023 [US1] Test invalid credentials rejection in `phase-2-web/backend/tests/test_auth.py` (FR-002)
 
 ### Frontend Foundation
 
-- [ ] T024 [US1] Setup Better Auth with JWT configuration in `phase-2/frontend/src/lib/auth.ts`
-- [ ] T025 [US1] Create API client with JWT token handling in `phase-2/frontend/src/lib/api.ts`
-- [ ] T026 [US1] Define TypeScript interfaces for auth responses in `phase-2/frontend/src/types/index.ts`
+- [ ] T024 [US1] Setup Better Auth with JWT configuration in `phase-2-web/frontend/src/lib/auth.ts`
+- [ ] T025 [US1] Create API client with JWT token handling in `phase-2-web/frontend/src/lib/api.ts`
+- [ ] T026 [US1] Define TypeScript interfaces for auth responses in `phase-2-web/frontend/src/types/index.ts`
 
 ### Frontend Pages
 
-- [ ] T027 [US1] Create registration page in `phase-2/frontend/src/app/register/page.tsx`
-- [ ] T028 [US1] Create login page in `phase-2/frontend/src/app/login/page.tsx`
+- [ ] T027 [US1] Create registration page in `phase-2-web/frontend/src/app/register/page.tsx`
+- [ ] T028 [US1] Create login page in `phase-2-web/frontend/src/app/login/page.tsx`
 - [ ] T029 [US1] Add auth state management and token storage (FR-002)
 
 **Checkpoint**: User Story 1 complete - users can register, login, and receive JWT tokens
@@ -98,35 +98,35 @@
 
 ### Backend Implementation
 
-- [ ] T030 [US2] Implement GET /todos endpoint in `phase-2/backend/src/api/todos.py` (FR-005)
-- [ ] T031 [US2] Implement POST /todos endpoint in `phase-2/backend/src/api/todos.py` (FR-004)
-- [ ] T032 [US2] Implement GET /todos/{id} endpoint in `phase-2/backend/src/api/todos.py` (FR-005)
-- [ ] T033 [US2] Implement PUT /todos/{id} endpoint in `phase-2/backend/src/api/todos.py` (FR-006)
-- [ ] T034 [US2] Implement PATCH /todos/{id} endpoint in `phase-2/backend/src/api/todos.py` (FR-006)
-- [ ] T035 [US2] Implement DELETE /todos/{id} endpoint in `phase-2/backend/src/api/todos.py` (FR-007)
+- [ ] T030 [US2] Implement GET /todos endpoint in `phase-2-web/backend/src/api/todos.py` (FR-005)
+- [ ] T031 [US2] Implement POST /todos endpoint in `phase-2-web/backend/src/api/todos.py` (FR-004)
+- [ ] T032 [US2] Implement GET /todos/{id} endpoint in `phase-2-web/backend/src/api/todos.py` (FR-005)
+- [ ] T033 [US2] Implement PUT /todos/{id} endpoint in `phase-2-web/backend/src/api/todos.py` (FR-006)
+- [ ] T034 [US2] Implement PATCH /todos/{id} endpoint in `phase-2-web/backend/src/api/todos.py` (FR-006)
+- [ ] T035 [US2] Implement DELETE /todos/{id} endpoint in `phase-2-web/backend/src/api/todos.py` (FR-007)
 
 ### Backend Tests
 
-- [ ] T036 [US2] Contract test for GET /todos in `phase-2/backend/tests/test_todos.py`
-- [ ] T037 [US2] Contract test for POST /todos in `phase-2/backend/tests/test_todos.py`
-- [ ] T038 [US2] Contract test for GET /todos/{id} in `phase-2/backend/tests/test_todos.py`
-- [ ] T039 [US2] Contract test for PUT /todos/{id} in `phase-2/backend/tests/test_todos.py`
-- [ ] T040 [US2] Contract test for PATCH /todos/{id} in `phase-2/backend/tests/test_todos.py`
-- [ ] T041 [US2] Contract test for DELETE /todos/{id} in `phase-2/backend/tests/test_todos.py`
-- [ ] T042 [US2] Test input validation in `phase-2/backend/tests/test_todos.py` (FR-011)
+- [ ] T036 [US2] Contract test for GET /todos in `phase-2-web/backend/tests/test_todos.py`
+- [ ] T037 [US2] Contract test for POST /todos in `phase-2-web/backend/tests/test_todos.py`
+- [ ] T038 [US2] Contract test for GET /todos/{id} in `phase-2-web/backend/tests/test_todos.py`
+- [ ] T039 [US2] Contract test for PUT /todos/{id} in `phase-2-web/backend/tests/test_todos.py`
+- [ ] T040 [US2] Contract test for PATCH /todos/{id} in `phase-2-web/backend/tests/test_todos.py`
+- [ ] T041 [US2] Contract test for DELETE /todos/{id} in `phase-2-web/backend/tests/test_todos.py`
+- [ ] T042 [US2] Test input validation in `phase-2-web/backend/tests/test_todos.py` (FR-011)
 
 ### Frontend Implementation
 
-- [ ] T043 [US2] Create todo TypeScript interfaces in `phase-2/frontend/src/types/index.ts`
-- [ ] T044 [US2] Extend API client with todo operations in `phase-2/frontend/src/lib/api.ts`
-- [ ] T045 [US2] Create task list component in `phase-2/frontend/src/components/todo/TaskList.tsx`
-- [ ] T046 [US2] Create task item component in `phase-2/frontend/src/components/todo/TaskItem.tsx`
-- [ ] T047 [US2] Create task form component in `phase-2/frontend/src/components/todo/TaskForm.tsx`
+- [ ] T043 [US2] Create todo TypeScript interfaces in `phase-2-web/frontend/src/types/index.ts`
+- [ ] T044 [US2] Extend API client with todo operations in `phase-2-web/frontend/src/lib/api.ts`
+- [ ] T045 [US2] Create task list component in `phase-2-web/frontend/src/components/todo/TaskList.tsx`
+- [ ] T046 [US2] Create task item component in `phase-2-web/frontend/src/components/todo/TaskItem.tsx`
+- [ ] T047 [US2] Create task form component in `phase-2-web/frontend/src/components/todo/TaskForm.tsx`
 
 ### Frontend Pages
 
-- [ ] T048 [US2] Create dashboard layout with auth guard in `phase-2/frontend/src/app/dashboard/layout.tsx` (FR-003)
-- [ ] T049 [US2] Create dashboard page with task list in `phase-2/frontend/src/app/dashboard/page.tsx`
+- [ ] T048 [US2] Create dashboard layout with auth guard in `phase-2-web/frontend/src/app/dashboard/layout.tsx` (FR-003)
+- [ ] T049 [US2] Create dashboard page with task list in `phase-2-web/frontend/src/app/dashboard/page.tsx`
 - [ ] T050 [US2] Add task creation UI with form submission
 - [ ] T051 [US2] Add task editing UI with inline or modal form
 - [ ] T052 [US2] Add task deletion with confirmation
@@ -143,10 +143,10 @@
 
 ### Backend Security Tests
 
-- [ ] T053 [US3] Test user isolation on GET /todos in `phase-2/backend/tests/test_isolation.py` (SC-002)
-- [ ] T054 [US3] Test user isolation on GET /todos/{id} in `phase-2/backend/tests/test_isolation.py` (SC-002)
-- [ ] T055 [US3] Test user isolation on PUT /todos/{id} in `phase-2/backend/tests/test_isolation.py` (SC-002)
-- [ ] T056 [US3] Test user isolation on DELETE /todos/{id} in `phase-2/backend/tests/test_isolation.py` (SC-002)
+- [ ] T053 [US3] Test user isolation on GET /todos in `phase-2-web/backend/tests/test_isolation.py` (SC-002)
+- [ ] T054 [US3] Test user isolation on GET /todos/{id} in `phase-2-web/backend/tests/test_isolation.py` (SC-002)
+- [ ] T055 [US3] Test user isolation on PUT /todos/{id} in `phase-2-web/backend/tests/test_isolation.py` (SC-002)
+- [ ] T056 [US3] Test user isolation on DELETE /todos/{id} in `phase-2-web/backend/tests/test_isolation.py` (SC-002)
 - [ ] T057 [US3] Test anonymous request rejection on all todo endpoints (SC-003)
 
 ### Frontend Security
@@ -185,7 +185,7 @@
 ### Documentation
 
 - [ ] T064 Update quickstart.md with verified setup instructions
-- [ ] T065 Create README.md for phase-2/ directory
+- [ ] T065 Create README.md for phase-2-web/ directory
 
 ### Error Handling
 

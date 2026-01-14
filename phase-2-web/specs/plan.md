@@ -36,7 +36,7 @@ Transform the Phase I in-memory Python console Todo application into a full-stac
 ### Documentation (this feature)
 
 ```
-specs/002-web-todo-auth/
+specs/
 ├── plan.md              # This file (/sp.plan command output)
 ├── research.md          # Technical research notes
 ├── data-model.md        # Database schema and models
@@ -49,7 +49,7 @@ specs/002-web-todo-auth/
 ### Source Code (monorepo structure)
 
 ```
-phase-2/
+phase-2-web/
 ├── backend/                      # FastAPI application
 │   ├── src/
 │   │   ├── __init__.py
@@ -113,7 +113,7 @@ phase-2/
 └── README.md                     # Phase documentation
 ```
 
-**Structure Decision**: Monorepo with separate `backend/` and `frontend/` directories under `phase-2/`. This allows independent development and deployment while sharing documentation and configuration at the feature level.
+**Structure Decision**: Monorepo with separate `backend/` and `frontend/` directories under `phase-2-web/`. This allows independent development and deployment while sharing documentation and configuration at the feature level.
 
 ---
 
@@ -665,4 +665,4 @@ No constitution violations requiring justification. All decisions align with pri
 
 - **Specification**: [spec.md](./spec.md)
 - **Constitution**: [.specify/memory/constitution.md](../../../../.specify/memory/constitution.md)
-- **Phase I**: [phase-1/](../phase-1/README.md)
+- **Phase I**: [phase-1-cli/](../phase-1-cli/README.md)

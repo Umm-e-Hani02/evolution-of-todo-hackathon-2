@@ -1,5 +1,5 @@
 {
   "version": 2,
   "framework": "nextjs",
-  "rootDirectory": "phase-2/frontend"
+  "rootDirectory": "phase-2-web/frontend"
 }
