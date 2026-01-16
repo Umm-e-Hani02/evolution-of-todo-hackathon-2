@@ -1,4 +1,4 @@
-"""FastAPI application entry point."""
+"""FastAPI application entry point with fixed CORS for Vercel and localhost."""
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException
@@ -31,27 +31,20 @@ app = FastAPI(
 )
 print("FastAPI application created successfully")
 
-# Configure CORS with dynamic origins
-cors_origins_input = settings.cors_origins
-print(f"Raw CORS origins from settings: {cors_origins_input}")
-
-if not cors_origins_input or len(cors_origins_input.strip()) == 0:
-    print("WARNING: CORS_ORIGINS is empty, using safe default")
-    cors_origins = ["http://localhost:3000"]
-else:
-    # Split the environment variable into list of origins
-    origins = [origin.strip() for origin in cors_origins_input.split(",") if origin.strip()]
-    cors_origins = origins
+# CORS configuration
+cors_origins = [
+    "http://localhost:3000",
+    "https://phase2-evolution-of-todo.vercel.app"
+]
 
 print(f"Final CORS origins: {cors_origins}")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=cors_origins,
+    allow_origins=cors_origins,        # exact match domains
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],  # Include OPTIONS for preflight
-    allow_headers=["*"],
-    expose_headers=["Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"]
+    allow_methods=["*"],               # allow all methods including OPTIONS
+    allow_headers=["*"],               # allow all headers
 )
 
 # Include routers
@@ -61,26 +54,22 @@ print("Including todos router...")
 app.include_router(todos.router)
 print("Routers included successfully")
 
-
+# Health check endpoints
 @app.get("/health", tags=["Health"])
 def health_check() -> dict:
-    """Health check endpoint."""
     return {"status": "healthy", "version": "1.0.0"}
-
 
 @app.get("/ready", tags=["Health"])
 def readiness_check(db: Session = Depends(get_db)) -> dict:
-    """Readiness check endpoint that verifies database connectivity."""
     try:
         db.execute("SELECT 1")
         return {"status": "ready", "database": "connected", "version": "1.0.0"}
     except Exception as e:
         raise HTTPException(status_code=503, detail=f"Database not ready: {str(e)}")
 
-
+# Root endpoint
 @app.get("/", tags=["Root"])
 def root() -> dict:
-    """Root endpoint with API information."""
     return {
         "name": "Todo API - Phase II",
         "version": "1.0.0",
