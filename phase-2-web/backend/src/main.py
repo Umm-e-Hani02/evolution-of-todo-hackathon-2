@@ -1,4 +1,5 @@
 """FastAPI application entry point."""
+
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -30,7 +31,7 @@ app = FastAPI(
 )
 print("FastAPI application created successfully")
 
-# Configure CORS with validation
+# Configure CORS with dynamic origins
 cors_origins_input = settings.cors_origins
 print(f"Raw CORS origins from settings: {cors_origins_input}")
 
@@ -38,13 +39,9 @@ if not cors_origins_input or len(cors_origins_input.strip()) == 0:
     print("WARNING: CORS_ORIGINS is empty, using safe default")
     cors_origins = ["http://localhost:3000"]
 else:
-    # Split and clean origins, handle wildcard patterns by replacing them with specific domains
+    # Split the environment variable into list of origins
     origins = [origin.strip() for origin in cors_origins_input.split(",") if origin.strip()]
-    # Configure CORS with specific origins
-cors_origins = [
-    "http://localhost:3000",
-    "https://phase2-evolution-of-todo.vercel.app"
-]
+    cors_origins = origins
 
 print(f"Final CORS origins: {cors_origins}")
 
@@ -52,9 +49,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],  # Explicitly include OPTIONS
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],  # Include OPTIONS for preflight
     allow_headers=["*"],
-    # Expose headers that browsers can access
     expose_headers=["Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"]
 )
 
@@ -71,11 +67,11 @@ def health_check() -> dict:
     """Health check endpoint."""
     return {"status": "healthy", "version": "1.0.0"}
 
+
 @app.get("/ready", tags=["Health"])
 def readiness_check(db: Session = Depends(get_db)) -> dict:
     """Readiness check endpoint that verifies database connectivity."""
     try:
-        # Test database connectivity
         db.execute("SELECT 1")
         return {"status": "ready", "database": "connected", "version": "1.0.0"}
     except Exception as e:
