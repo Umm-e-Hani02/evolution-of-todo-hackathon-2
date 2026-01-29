@@ -70,7 +70,7 @@ export const todosAPI = {
     return response.data;
   },
 
-  create: async (data: CreateTodoData): Promise<TodoTask> => {
+  addTodo: async (data: CreateTodoData): Promise<TodoTask> => {
     const response = await api.post<TodoTask>('/todos', data);
     return response.data;
   },

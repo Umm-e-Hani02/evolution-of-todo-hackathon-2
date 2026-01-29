@@ -14,7 +14,7 @@ class TodoTask(SQLModel, table=True):
         description="Unique identifier for the task",
     )
     user_id: str = Field(
-        foreign_key="user.id",
+        foreign_key="users.id",
         ondelete="CASCADE",
         description="Reference to owning user",
     )

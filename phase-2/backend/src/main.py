@@ -6,6 +6,7 @@ from sqlmodel import Session
 from src.core.config import settings
 from src.core.database import init_db, get_db
 from src.api import auth, todos
+from src.models import User, TodoTask
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -38,13 +39,8 @@ if not cors_origins_input or len(cors_origins_input.strip()) == 0:
     print("WARNING: CORS_ORIGINS is empty, using safe default")
     cors_origins = ["http://localhost:3000"]
 else:
-    # Split and clean origins, handle wildcard patterns by replacing them with specific domains
-    origins = [origin.strip() for origin in cors_origins_input.split(",") if origin.strip()]
-    # Configure CORS with specific origins
-cors_origins = [
-    "http://localhost:3000",
-    "https://phase2-evolution-of-todo.vercel.app"
-]
+    # Split and clean origins
+    cors_origins = [origin.strip() for origin in cors_origins_input.split(",")]
 
 print(f"Final CORS origins: {cors_origins}")
 

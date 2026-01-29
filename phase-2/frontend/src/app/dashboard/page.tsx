@@ -58,7 +58,7 @@ export default function DashboardPage() {
 
   const handleAddTask = async (data: { title: string; description?: string }) => {
     try {
-      const newTodo = await todosAPI.create(data);
+      const newTodo = await todosAPI.addTodo(data);
       setTodos([newTodo, ...todos]);
       setShowAddForm(false);
     } catch (err) {

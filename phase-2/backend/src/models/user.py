@@ -7,6 +7,7 @@ from uuid import uuid4
 
 class User(SQLModel, table=True):
     """User account entity for multi-user authentication."""
+    __tablename__ = "users"
 
     id: str = Field(
         default_factory=lambda: str(uuid4()),
