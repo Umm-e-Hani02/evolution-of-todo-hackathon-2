@@ -32,6 +32,17 @@ app = FastAPI(
 )
 print("FastAPI application created successfully")
 
+# Configure CORS with validation
+cors_origins_input = settings.cors_origins
+print(f"Raw CORS origins from settings: {cors_origins_input}")
+
+if not cors_origins_input or len(cors_origins_input.strip()) == 0:
+    print("WARNING: CORS_ORIGINS is empty, using safe default")
+    cors_origins = ["http://localhost:3000"]
+else:
+    # Split and clean origins
+    cors_origins = [origin.strip() for origin in cors_origins_input.split(",")]
+
 print(f"Final CORS origins: {cors_origins}")
 
 app.add_middleware(
