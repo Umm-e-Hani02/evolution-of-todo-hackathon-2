@@ -51,3 +51,4 @@ logs/
 **/.next/**
 **/test.db
 **/*.logevolution-of-todo-hackathon-2/
+phase-3/backend/local.db

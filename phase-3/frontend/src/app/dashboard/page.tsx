@@ -1,18 +1,38 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
+import { todosAPI } from "@/lib/api";
+import { TodoTask } from "@/types";
 import ThemeToggleButton from "@/components/ui/ThemeToggleButton";
 import ChatButton from "@/components/chat/ChatButton";
 import "@/components/chat/chat.css";
+import AddTaskForm from "@/components/todo/AddTaskForm";
+import TaskCard from "@/components/todo/TaskCard";
 
 export default function DashboardPage() {
   const router = useRouter();
   const { logout, user, isAuthenticated, isLoading: authLoading } = useAuth();
 
   // If user is not authenticated, redirect to login
-  if (!authLoading && !isAuthenticated) {
-    // We can't use router.push here in the same render cycle,
-    // so we'll handle the redirect in a useEffect or return early
-    if (typeof window !== 'undefined') {
-      window.location.href = '/login';
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/login');
     }
+  }, [authLoading, isAuthenticated, router]);
+
+  // Show loading state while checking authentication
+  if (authLoading) {
+    return (
+      <div className="dashboard-layout">
+        <div className="loading">Checking authentication...</div>
+      </div>
+    );
+  }
+
+  // If not authenticated after loading, don't render the dashboard
+  if (!isAuthenticated) {
     return null;
   }
   const [todos, setTodos] = useState<TodoTask[]>([]);
@@ -51,7 +71,7 @@ export default function DashboardPage() {
 
   const handleAddTask = async (data: { title: string; description?: string }) => {
     try {
-      const newTodo = await todosAPI.create(data);
+      const newTodo = await todosAPI.addTodo(data);
       setTodos([newTodo, ...todos]);
       setShowAddForm(false);
     } catch (err) {
@@ -62,26 +82,7 @@ export default function DashboardPage() {
 
   const handleUpdateTask = async (id: string, data: Partial<TodoTask>) => {
     try {
-      // Convert Partial<TodoTask> to UpdateTodoData to match API expectations
-      const updateData: Partial<Record<string, unknown>> = { ...data };
-      if ('description' in updateData && updateData.description === null) {
-        delete updateData.description; // Remove null values to match UpdateTodoData
-      }
-
-      const typedData: Partial<Omit<TodoTask, 'id' | 'user_id' | 'created_at' | 'updated_at'>> = updateData;
-      const transformedData: { title?: string; description?: string; completed?: boolean } = {};
-
-      if ('title' in typedData && typedData.title !== undefined) {
-        transformedData.title = typedData.title;
-      }
-      if ('description' in typedData && typedData.description !== undefined && typedData.description !== null) {
-        transformedData.description = typedData.description;
-      }
-      if ('completed' in typedData && typedData.completed !== undefined) {
-        transformedData.completed = typedData.completed;
-      }
-
-      const updated = await todosAPI.update(id, transformedData);
+      const updated = await todosAPI.update(id, data);
       setTodos(todos.map((t) => (t.id === id ? updated : t)));
     } catch (err) {
       console.error("Failed to update task:", err);
@@ -113,39 +114,14 @@ export default function DashboardPage() {
     logout();
   };
 
-  if (isLoading) {
-    return (
-      <div className="dashboard-layout">
-        <nav className="navbar">
-          <div className="navbar-brand">
-            <div className="navbar-logo">
-  <img src="/todopro-logo.png" alt="TodoPro Logo" width="40" height="40" />
-  <h1>TodoPro</h1>
-</div>
-          </div>
-          <div className="navbar-user">
-            <span className="user-email">{user?.email}</span>
-            <ThemeToggleButton />
-            <button className="btn btn-secondary" onClick={handleLogout}>
-              Logout
-            </button>
-          </div>
-        </nav>
-        <div className="dashboard-content">
-          <div className="loading">Loading your tasks...</div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="dashboard-layout">
       <nav className="navbar">
         <div className="navbar-brand">
           <div className="navbar-logo">
-  <img src="/todopro-logo.png" alt="TodoPro Logo" width="40" height="40" />
-  <h1>TodoPro</h1>
-</div>
+            <img src="/todopro-logo.png" alt="TodoPro Logo" width="40" height="40" />
+            <h1>TodoPro</h1>
+          </div>
         </div>
         <div className="navbar-user">
           <span className="user-email">{user?.email}</span>
