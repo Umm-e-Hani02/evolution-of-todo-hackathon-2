@@ -23,14 +23,14 @@ def get_positive_int(prompt: str) -> int | None:
     try:
         value = int(input(f"  {prompt}"))
         if value <= 0:
-            print(f"  {ERROR}Enter a positive number{RESET}")
+            print(f"  {ERROR}Error:{RESET} Please enter a positive number.")
             return None
         return value
     except ValueError:
-        print(f"  {ERROR}Enter a valid number{RESET}")
+        print(f"  {ERROR}Error:{RESET} Invalid input. Please enter a valid number.")
         return None
     except (EOFError, KeyboardInterrupt):
-        print(f"\n  {WARNING}Operation cancelled{RESET}")
+        print(f"\n  {WARNING}Operation cancelled.{RESET}")
         return None
 
 
@@ -41,11 +41,14 @@ def handle_add_task(service: TodoService) -> None:
         service: TodoService instance to add task to
     """
     try:
-        description = input(f"  {ACCENT}Task description: {RESET}")
+        description = input(f"  {ACCENT}Enter task description: {RESET}")
+        if not description.strip():
+            print(f"  {ERROR}Error:{RESET} Task description cannot be empty.")
+            return
         task = service.add_task(description)
-        print(f"  {SUCCESS}✔ {task.description} added successfully{RESET}")
+        print(f"  {SUCCESS}✔ Task '{task.description}' added successfully!{RESET}")
     except ValueError as e:
-        print(f"  {ERROR}{e}{RESET}")
+        print(f"  {ERROR}Error: {e}{RESET}")
 
 
 def handle_view_tasks(service: TodoService) -> None:
@@ -57,23 +60,28 @@ def handle_view_tasks(service: TodoService) -> None:
     tasks = service.get_all_tasks()
 
     if not tasks:
-        print(f"\n  {MUTED}No tasks yet. Add your first task!{RESET}")
+        print(f"\n  {MUTED}No tasks yet. Select 'Add Task' to get started!{RESET}")
         return
 
-    print(f"\n  {BOLD}{PINK}Your Tasks{RESET}")
-    print(f"  {MUTED}{'-' * 45}{RESET}")
-
+    print(f"\n  {BOLD}{PINK}┌────────────────── Your Tasks ──────────────────┐{RESET}")
+    
     completed_count = sum(1 for task in tasks if task.completed)
     pending_count = len(tasks) - completed_count
 
     for index, task in enumerate(tasks, start=1):
-        status = f"{TASK_DONE}●{RESET}" if task.completed else f"{TASK_PENDING}○{RESET}"
-        desc = f"{TASK_DONE}{task.description}{RESET}" if task.completed else f"{TASK_PENDING}{task.description}{RESET}"
-        num_str = f"{SUCCESS}{index:2d}{RESET}"
-        print(f"  {num_str}) {status} {desc}")
+        status_icon = f"{TASK_DONE}●{RESET}" if task.completed else f"{TASK_PENDING}○{RESET}"
+        description_style = f"{MUTED}{task.description}{RESET}" if task.completed else f"{RESET}{task.description}"
+        num_str = f"{SECONDARY}{index:2d}){RESET}"
+        
+        # Basic padding to align content
+        line = f"  {num_str} {status_icon} {description_style}"
+        print(f"  {BOLD}{PINK}│{RESET}{line.ljust(50)}{BOLD}{PINK}│{RESET}")
 
-    print(f"  {MUTED}{'-' * 45}{RESET}")
-    print(f"  {BOLD}Total:{RESET} {len(tasks)}  {TASK_DONE}{completed_count} done{RESET}  {TASK_PENDING}{pending_count} pending{RESET}")
+
+    print(f"  {BOLD}{PINK}├──────────────────────────────────────────────┤{RESET}")
+    summary = f"  Total: {len(tasks)} | {TASK_DONE}Done: {completed_count}{RESET} | {TASK_PENDING}Pending: {pending_count}{RESET}"
+    print(f"  {BOLD}{PINK}│{RESET}{summary.ljust(50)}{BOLD}{PINK}│{RESET}")
+    print(f"  {BOLD}{PINK}└──────────────────────────────────────────────┘{RESET}")
 
 
 def handle_update_task(service: TodoService) -> None:
@@ -82,32 +90,35 @@ def handle_update_task(service: TodoService) -> None:
     Args:
         service: TodoService instance to update task in
     """
-    # First show tasks so user knows valid indices
     tasks = service.get_all_tasks()
     if not tasks:
-        print(f"  {ERROR}No tasks available. Add a task first.{RESET}")
+        print(f"  {MUTED}No tasks to update. Please add a task first.{RESET}")
         return
 
-    task_num = get_positive_int(f"{ACCENT}Task number to update: {RESET}")
+    handle_view_tasks(service) # Show tasks to the user first
+    print()
+
+    task_num = get_positive_int(f"{ACCENT}Enter task number to update: {RESET}")
     if task_num is None:
         return
 
-    # Convert 1-based user input to 0-based list index
     index = task_num - 1
 
     try:
-        # Show current description
         current_task = tasks[index]
-        print(f"  {MUTED}Current: {current_task.description}{RESET}")
+        print(f"  {MUTED}Current description: {current_task.description}{RESET}")
 
-        new_description = input(f"  {ACCENT}New description: {RESET}")
+        new_description = input(f"  {ACCENT}Enter new description: {RESET}")
+        if not new_description.strip():
+            print(f"  {ERROR}Error:{RESET} Task description cannot be empty.")
+            return
+
         updated_task = service.update_task(index, new_description)
-        print(f"  {SUCCESS}✔ {updated_task.description} updated successfully{RESET}")
-    except IndexError as e:
-        print(f"  {ERROR}{e}{RESET}")
-        print(f"  {MUTED}Enter 1-{len(tasks)}{RESET}")
+        print(f"  {SUCCESS}✔ Task {task_num} updated successfully to '{updated_task.description}'!{RESET}")
+    except IndexError:
+        print(f"  {ERROR}Error:{RESET} Task number {task_num} does not exist. Please enter a number between 1 and {len(tasks)}.")
     except ValueError as e:
-        print(f"  {ERROR}{e}{RESET}")
+        print(f"  {ERROR}Error: {e}{RESET}")
 
 
 def handle_delete_task(service: TodoService) -> None:
@@ -118,24 +129,24 @@ def handle_delete_task(service: TodoService) -> None:
     """
     tasks = service.get_all_tasks()
     if not tasks:
-        print(f"  {ERROR}No tasks available. Add a task first.{RESET}")
+        print(f"  {MUTED}No tasks to delete. The list is already empty.{RESET}")
         return
+        
+    handle_view_tasks(service) # Show tasks to the user first
+    print()
 
-    task_num = get_positive_int(f"{ERROR}Task number to delete: {RESET}")
+    task_num = get_positive_int(f"{ERROR}Enter task number to delete: {RESET}")
     if task_num is None:
         return
 
-    # Convert 1-based user input to 0-based list index
     index = task_num - 1
 
     try:
         task_description = tasks[index].description
         service.delete_task(index)
-        print(f"  {SUCCESS}✔ {task_description} deleted successfully{RESET}")
-        print(f"  {MUTED}Remaining tasks renumbered{RESET}")
-    except IndexError as e:
-        print(f"  {ERROR}{e}{RESET}")
-        print(f"  {MUTED}Enter 1-{len(tasks)}{RESET}")
+        print(f"  {SUCCESS}✔ Task '{task_description}' deleted successfully.{RESET}")
+    except IndexError:
+        print(f"  {ERROR}Error:{RESET} Task number {task_num} does not exist. Please enter a number between 1 and {len(tasks)}.")
 
 
 def handle_mark_complete(service: TodoService) -> None:
@@ -146,20 +157,24 @@ def handle_mark_complete(service: TodoService) -> None:
     """
     tasks = service.get_all_tasks()
     if not tasks:
-        print(f"  {ERROR}No tasks available. Add a task first.{RESET}")
+        print(f"  {MUTED}No tasks to complete. Please add a task first.{RESET}")
         return
 
-    task_num = get_positive_int(f"{ACCENT}Task number to complete: {RESET}")
+    handle_view_tasks(service) # Show tasks to the user first
+    print()
+
+    task_num = get_positive_int(f"{ACCENT}Enter task number to mark as complete: {RESET}")
     if task_num is None:
         return
 
-    # Convert 1-based user input to 0-based list index
     index = task_num - 1
 
     try:
+        if tasks[index].completed:
+            print(f"  {WARNING}Note:{RESET} Task {task_num} is already marked as complete.")
+            return
+
         completed_task = service.mark_complete(index)
-        print(f"  {SUCCESS}✔ {completed_task.description} marked complete{RESET}")
-        print(f"  {MUTED}View tasks to see updated status{RESET}")
-    except IndexError as e:
-        print(f"  {ERROR}{e}{RESET}")
-        print(f"  {MUTED}Enter 1-{len(tasks)}{RESET}")
+        print(f"  {SUCCESS}✔ Task '{completed_task.description}' marked as complete!{RESET}")
+    except IndexError:
+        print(f"  {ERROR}Error:{RESET} Task number {task_num} does not exist. Please enter a number between 1 and {len(tasks)}.")

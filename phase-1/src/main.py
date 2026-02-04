@@ -46,10 +46,12 @@ def main() -> None:
     signal.signal(signal.SIGINT, signal_handler)
 
     # Display welcome message
-    print(f"\n  {BOLD}{PINK}Todo Application{RESET}  {SUBTITLE}In-Memory Todo Manager{RESET}")
-    print(f"  {MUTED}{'-' * 45}{RESET}")
-    print(f"  {BOLD}Welcome!{RESET}")
-    print(f"  {MUTED}Tasks are stored in memory only and will be lost on exit.{RESET}")
+    print(f"\n  {BOLD}{PINK}┌───────────────────────────────────────────────┐{RESET}")
+    print(f"  {BOLD}{PINK}│{RESET} {BOLD}{PINK}Welcome to Todo Application!{RESET}  {SUBTITLE}In-Memory Todo Manager{RESET} {BOLD}{PINK}│{RESET}")
+    print(f"  {BOLD}{PINK}├───────────────────────────────────────────────┤{RESET}")
+    print(f"  {BOLD}{PINK}│{RESET} {BOLD}Hello!{RESET}                                                {BOLD}{PINK}│{RESET}")
+    print(f"  {BOLD}{PINK}│{RESET} {MUTED}Tasks are stored in memory only and will be lost on exit.{RESET} {BOLD}{PINK}│{RESET}")
+    print(f"  {BOLD}{PINK}└───────────────────────────────────────────────┘{RESET}")
     print()
 
     # Initialize service
