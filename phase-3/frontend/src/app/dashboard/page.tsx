@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 import { todosAPI } from "@/lib/api";
-import { TodoTask } from "@/types";
+import { TodoTask, UpdateTodoData } from "@/types";
 import ThemeToggleButton from "@/components/ui/ThemeToggleButton";
 import ChatButton from "@/components/chat/ChatButton";
 import "@/components/chat/chat.css";
@@ -89,7 +89,15 @@ export default function DashboardPage() {
 
   const handleUpdateTask = async (id: string, data: Partial<TodoTask>) => {
     try {
-      const updated = await todosAPI.update(id, data);
+      // Convert Partial<TodoTask> to UpdateTodoData by filtering out null values
+      const updateData: UpdateTodoData = {};
+      if (data.title !== undefined) updateData.title = data.title;
+      if (data.description !== undefined && data.description !== null) {
+        updateData.description = data.description;
+      }
+      if (data.completed !== undefined) updateData.completed = data.completed;
+
+      const updated = await todosAPI.update(id, updateData);
       setTodos(todos.map((t) => (t.id === id ? updated : t)));
     } catch (err) {
       console.error("Failed to update task:", err);
