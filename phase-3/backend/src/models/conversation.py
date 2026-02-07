@@ -16,7 +16,7 @@ class Conversation(SQLModel, table=True):
         description="Unique identifier for the conversation",
     )
     user_id: str = Field(
-        foreign_key="users.id",  # Reference Phase-2 user table
+        foreign_key="user.id",  # Reference to user table (table name is 'user' by default)
         ondelete="CASCADE",
         description="Reference to the user who owns this conversation",
     )

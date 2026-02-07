@@ -37,8 +37,20 @@ class AgentRunner:
         Args:
             tools: List of MCP tool definitions (OpenAI function format)
         """
-        self.client = OpenAI(api_key=OPENAI_API_KEY)
-        self.model = OPENAI_MODEL
+        # Check if using OpenRouter API key (starts with sk-or-v1)
+        if OPENAI_API_KEY.startswith("sk-or-v1-"):
+            # Configure for OpenRouter
+            self.client = OpenAI(
+                base_url="https://openrouter.ai/api/v1",
+                api_key=OPENAI_API_KEY,
+            )
+            # Default to a model that works well with OpenRouter
+            self.model = OPENAI_MODEL if OPENAI_MODEL else "openai/gpt-3.5-turbo"
+        else:
+            # Standard OpenAI configuration
+            self.client = OpenAI(api_key=OPENAI_API_KEY)
+            self.model = OPENAI_MODEL if OPENAI_MODEL else "gpt-4"
+
         self.tools = tools
         self.instructions = AGENT_INSTRUCTIONS
 

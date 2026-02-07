@@ -36,7 +36,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)) -> TokenRespo
 
         # Generate JWT token
         token = create_access_token(
-            data={"sub": new_user.id, "email": new_user.email}
+            data={"sub": str(new_user.id), "email": new_user.email}
         )
 
         return TokenResponse(

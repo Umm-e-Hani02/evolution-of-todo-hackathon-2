@@ -10,6 +10,14 @@ venv/
 ENV/
 .venv/
 .env
+.env.local
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+local.db
+phase3_local.db
 
 # Build outputs
 dist/
@@ -50,5 +58,4 @@ logs/
 **/.pytest_cache/**
 **/.next/**
 **/test.db
-**/*.logevolution-of-todo-hackathon-2/
-phase-3/backend/local.db
+**/*.log

@@ -56,11 +56,6 @@ export const authAPI = {
     const response = await api.get('/auth/me');
     return response.data;
   },
-
-  chat: async (message: string, conversation_id?: string): Promise<any> => {
-    const response = await api.post('/api/chat', { message, conversation_id });
-    return response.data;
-  },
 };
 
 // Todos API
@@ -92,6 +87,11 @@ export const todosAPI = {
 
   delete: async (id: string): Promise<void> => {
     await api.delete(`/todos/${id}`);
+  },
+
+  chat: async (data: { message: string; conversation_id?: string }): Promise<any> => {
+    const response = await api.post('/api/chat', data);
+    return response.data;
   },
 };
 

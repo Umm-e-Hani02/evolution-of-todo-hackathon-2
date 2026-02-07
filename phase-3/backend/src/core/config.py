@@ -16,11 +16,11 @@ class Settings(BaseSettings):
 
     # Server
     host: str = "0.0.0.0"
-    port: int = 8001  # Different port from Phase-2
+    port: int = 8000  # Different port from Phase-2
     debug: bool = False
 
     # CORS - same as Phase-2
-    cors_origins: str = "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001,https://phase2-evolution-of-todo.vercel.app,https://evolution-of-todo.vercel.app"
+    cors_origins: str = "http://localhost:3000"
 
     # OpenAI settings for AI chatbot
     openai_api_key: str = ""

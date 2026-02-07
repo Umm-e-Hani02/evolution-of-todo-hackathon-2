@@ -14,8 +14,9 @@ from sqlmodel import Session, select
 from ..core.database import get_db
 from ..models.conversation import Conversation
 from ..models.message import Message, MessageRole
+from ..services.openai_service import openai_service
 from ..agent.runner import AgentRunner
-from ..mcp.server import mcp_server
+from ..mcp.server import mcp_server # Import the global MCP server instance
 
 router = APIRouter(prefix="/api", tags=["chat"])
 
@@ -27,25 +28,73 @@ class ChatRequest(BaseModel):
     conversation_id: Optional[str] = Field(None, description="Conversation ID to continue (optional)")
 
 
-class ToolCallResponse(BaseModel):
-    """Tool call response model."""
-    tool_name: str
-    input: Dict[str, Any]
-    output: Dict[str, Any]
-    success: bool
-
-
 class ChatResponse(BaseModel):
     """Chat response model."""
     conversation_id: str
     message: str
-    tool_calls: list[ToolCallResponse] = []
 
 
 from ..deps import get_current_user
 from ..models.user import User
 
-# ... (other imports)
+# Initialize AgentRunner WITHOUT tools for free tier compatibility
+agent_runner = AgentRunner(tools=[])  # Empty tools list for basic chat only
+
+
+def detect_task_intent(message: str) -> bool:
+    """
+    Detect if the user message is trying to manage tasks.
+    Returns True if task-related intent is detected.
+    """
+    message_lower = message.lower()
+
+    # Task creation keywords
+    create_keywords = [
+        "create task", "add task", "make task", "new task",
+        "create a task", "add a task", "make a task",
+        "create todo", "add todo", "make todo", "new todo",
+        "remind me to", "remember to", "need to do"
+    ]
+
+    # Task listing keywords
+    list_keywords = [
+        "show task", "list task", "show todo", "list todo",
+        "my task", "my todo", "what task", "what todo",
+        "see task", "see todo", "view task", "view todo",
+        "what do i need", "what should i do"
+    ]
+
+    # Task update keywords
+    update_keywords = [
+        "update task", "edit task", "change task", "modify task",
+        "update todo", "edit todo", "change todo", "modify todo"
+    ]
+
+    # Task completion keywords
+    complete_keywords = [
+        "complete task", "finish task", "done task", "mark task",
+        "complete todo", "finish todo", "done todo", "mark todo",
+        "mark as done", "mark as complete", "check off"
+    ]
+
+    # Task deletion keywords
+    delete_keywords = [
+        "delete task", "remove task", "delete todo", "remove todo",
+        "get rid of", "clear task", "clear todo"
+    ]
+
+    # Check all keyword categories
+    all_keywords = (
+        create_keywords + list_keywords + update_keywords +
+        complete_keywords + delete_keywords
+    )
+
+    for keyword in all_keywords:
+        if keyword in message_lower:
+            return True
+
+    return False
+
 
 @router.post("/chat", response_model=ChatResponse)
 async def chat(
@@ -56,26 +105,42 @@ async def chat(
     """
     Chat endpoint for conversational AI interactions.
 
+    NOTE: This version uses a free model without tool calling support.
+    The chatbot can have conversations but cannot create/manage tasks.
+    Use the manual task form for task management.
+
     Args:
         request: Chat request with message and optional conversation_id
         session: Database session
         current_user: The authenticated user object
 
     Returns:
-        ChatResponse with agent message, conversation_id, and tool_calls
+        ChatResponse with agent message and conversation_id
 
     Raises:
         HTTPException: 400 for validation errors, 404 for not found, 500 for server errors
     """
+    # Tool executor not needed for basic chat
+    def tool_executor(tool_name: str, args: Dict[str, Any]) -> Dict[str, Any]:
+        """Placeholder - tools not supported in free tier."""
+        return {"success": False, "error": "Tool calling not available with free models"}
+
     try:
         user_id = current_user.id
         # Get or create conversation
         if request.conversation_id:
             # Continue existing conversation
-            conversation_id = UUID(request.conversation_id)
-            
+            try:
+                conversation_id_uuid = UUID(request.conversation_id)
+                conversation_id = str(conversation_id_uuid)  # Convert to string immediately
+            except ValueError:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid conversation ID format"
+                )
+
             # Verify conversation belongs to user
-            conversation = session.get(Conversation, str(conversation_id))
+            conversation = session.get(Conversation, conversation_id)
             if not conversation or conversation.user_id != user_id:
                 raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
@@ -87,20 +152,20 @@ async def chat(
             session.add(conversation)
             session.commit()
             session.refresh(conversation)
-            conversation_id = UUID(conversation.id)
+            conversation_id = conversation.id  # Use the string ID directly
 
-        # Load conversation history (last 50 messages)
+        # Load conversation history (last 10 messages)
         statement = (
             select(Message)
-            .where(Message.conversation_id == str(conversation_id))
+            .where(Message.conversation_id == conversation_id)
             .order_by(Message.created_at.asc())
-            .limit(50)
+            .limit(10)  # Limit to last 10 messages for context
         )
         history = session.exec(statement).all()
 
-        # Convert history to OpenAI format
+        # Convert history to OpenAI format (using enum values)
         messages = [
-            {"role": msg.role.value, "content": msg.content}
+            {"role": msg.role.value, "content": msg.content}  # Use the role value
             for msg in history
         ]
 
@@ -109,46 +174,44 @@ async def chat(
 
         # Save user message
         user_message = Message(
-            conversation_id=str(conversation_id),
+            conversation_id=conversation_id,
             role=MessageRole.USER,
             content=request.message
         )
         session.add(user_message)
         session.commit()
 
-        # Initialize agent runner with MCP tools
-        agent_runner = AgentRunner(tools=mcp_server.get_tool_definitions())
-
-        # Create tool executor that logs tool calls
-        tool_calls_log = []
-
-        def tool_executor(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
-            """Execute tool and return result."""
-            # Execute tool via MCP server (user_id injected by backend)
-            result = mcp_server.execute_tool(tool_name, arguments, session, user_id)
-
-            # Add to response log
-            tool_calls_log.append({
-                "tool_name": tool_name,
-                "input": arguments,
-                "output": result,
-                "success": result.get("success", False)
-            })
-
-            return result
-
-        # Run agent
-        agent_response = agent_runner.run(messages, tool_executor)
-
-        # Save assistant message only if there's content
-        if agent_response["message"]:
-            assistant_message = Message(
-                conversation_id=str(conversation_id),
-                role=MessageRole.ASSISTANT,
-                content=agent_response["message"]
+        # Check if user is trying to manage tasks - respond immediately without LLM call
+        if detect_task_intent(request.message):
+            print(f"Task intent detected in message: {request.message[:50]}...")
+            ai_response = (
+                "I can help you think through and plan your tasks, but for accuracy and reliability, "
+                "tasks are created and managed using the task form on the page."
             )
-            session.add(assistant_message)
-            session.commit()
+        else:
+            # Get AI response using AgentRunner for non-task conversations
+            try:
+                print(f"Calling AgentRunner with {len(messages)} messages in history")
+                result = agent_runner.run(messages, tool_executor)
+                ai_response = result["message"]
+                print(f"AgentRunner response received: {ai_response[:100] if ai_response else 'None'}...")
+            except Exception as e:
+                print(f"Error calling AgentRunner: {e}")
+                print(f"Error type: {type(e).__name__}")
+                # Return a friendly fallback message instead of showing the error
+                ai_response = (
+                    "I'm here to help! I can chat with you about productivity, time management, "
+                    "and planning strategies. What would you like to talk about?"
+                )
+
+        # Save assistant message
+        assistant_message = Message(
+            conversation_id=conversation_id,
+            role=MessageRole.ASSISTANT,
+            content=ai_response
+        )
+        session.add(assistant_message)
+        session.commit()
 
         # Update conversation timestamp
         conversation.updated_at = datetime.now()
@@ -157,11 +220,8 @@ async def chat(
 
         # Return response
         return ChatResponse(
-            conversation_id=str(conversation_id),
-            message=agent_response["message"],
-            tool_calls=[
-                ToolCallResponse(**call) for call in tool_calls_log
-            ]
+            conversation_id=conversation_id,
+            message=ai_response
         )
 
     except ValueError as e:

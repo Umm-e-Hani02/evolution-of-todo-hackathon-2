@@ -14,33 +14,30 @@ import TaskCard from "@/components/todo/TaskCard";
 export default function DashboardPage() {
   const router = useRouter();
   const { logout, user, isAuthenticated, isLoading: authLoading } = useAuth();
-
-  // If user is not authenticated, redirect to login
-  useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      router.push('/login');
-    }
-  }, [authLoading, isAuthenticated, router]);
-
-  // Show loading state while checking authentication
-  if (authLoading) {
-    return (
-      <div className="dashboard-layout">
-        <div className="loading">Checking authentication...</div>
-      </div>
-    );
-  }
-
-  // If not authenticated after loading, don't render the dashboard
-  if (!isAuthenticated) {
-    return null;
-  }
   const [todos, setTodos] = useState<TodoTask[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [stats, setStats] = useState({ total: 0, completed: 0, pending: 0 });
 
+  // Effects must be at the top, before any conditional returns
+  useEffect(() => {
+    if (!authLoading && !isAuthenticated) {
+      router.push('/login');
+    }
+  }, [authLoading, isAuthenticated, router]);
+
+  useEffect(() => {
+    if (isAuthenticated && !authLoading) {
+      loadTodos();
+    }
+  }, [isAuthenticated, authLoading]);
+
+  useEffect(() => {
+    updateStats(todos);
+  }, [todos]);
+
+  // Define functions before conditional returns
   const loadTodos = async () => {
     try {
       const data = await todosAPI.list();
@@ -61,17 +58,27 @@ export default function DashboardPage() {
     setStats({ total, completed, pending });
   };
 
-  useEffect(() => {
-    loadTodos();
-  }, []);
+  // Conditional rendering after all hooks
+  if (authLoading) {
+    return (
+      <div className="dashboard-layout">
+        <div className="loading">Checking authentication...</div>
+      </div>
+    );
+  }
 
-  useEffect(() => {
-    updateStats(todos);
-  }, [todos]);
+  // If not authenticated after loading, redirect immediately
+  if (!isAuthenticated) {
+    return (
+      <div className="dashboard-layout">
+        <div className="loading">Redirecting to login...</div>
+      </div>
+    );
+  }
 
   const handleAddTask = async (data: { title: string; description?: string }) => {
     try {
-      const newTodo = await todosAPI.addTodo(data);
+      const newTodo = await todosAPI.create(data);
       setTodos([newTodo, ...todos]);
       setShowAddForm(false);
     } catch (err) {
