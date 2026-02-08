@@ -1,0 +1,11 @@
+apiVersion: v2
+name: todo-app
+description: Phase-4 AI-powered Todo Application Helm Chart for Minikube
+
+type: application
+
+# Chart version
+version: 1.0.0
+
+# Application version
+appVersion: "4.0.0"

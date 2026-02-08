@@ -1,0 +1,287 @@
+openapi: 3.0.3
+info:
+  title: Todo AI Chatbot API
+  description: |
+    Stateless conversational API for natural language todo task management.
+
+    The chat endpoint accepts user messages and returns AI-generated responses.
+    The AI agent uses MCP tools to perform task operations (create, list, update, complete, delete).
+
+    All conversation history is persisted in the database and reconstructed on every request,
+    ensuring stateless architecture and conversation continuity across server restarts.
+  version: 1.0.0
+  contact:
+    name: Evolution of Todo - Phase III
+    url: https://github.com/Umm-e-Hani02/evolution-of-todo-hackathon-2
+
+servers:
+  - url: https://api.example.com
+    description: Production server
+  - url: http://localhost:8000
+    description: Local development server
+
+security:
+  - BearerAuth: []
+
+paths:
+  /api/chat:
+    post:
+      summary: Send a chat message
+      description: |
+        Send a user message to the AI chatbot and receive a response.
+
+        The endpoint:
+        - Authenticates the user via Bearer token
+        - Loads conversation history from database (last 50 messages)
+        - Processes the message with OpenAI Agent
+        - Executes any MCP tool calls (task operations)
+        - Persists user message, agent response, and tool logs to database
+        - Returns the agent's response
+
+        If conversation_id is not provided, a new conversation is created.
+        If conversation_id is provided, the message is added to the existing conversation.
+      operationId: sendChatMessage
+      tags:
+        - Chat
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+            examples:
+              newConversation:
+                summary: Start a new conversation
+                value:
+                  message: "Add a task to buy groceries"
+                  conversation_id: null
+              continueConversation:
+                summary: Continue existing conversation
+                value:
+                  message: "What are my tasks?"
+                  conversation_id: "550e8400-e29b-41d4-a716-446655440000"
+      responses:
+        '200':
+          description: Successful response with agent message
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+              examples:
+                taskCreated:
+                  summary: Task created successfully
+                  value:
+                    conversation_id: "550e8400-e29b-41d4-a716-446655440000"
+                    message: "I've created a task to buy groceries for you."
+                    tool_calls:
+                      - tool_name: "create_task"
+                        input:
+                          title: "buy groceries"
+                          user_id: "user-uuid"
+                        output:
+                          success: true
+                          data:
+                            task_id: "task-uuid"
+                            title: "buy groceries"
+                        success: true
+                taskListed:
+                  summary: Tasks listed
+                  value:
+                    conversation_id: "550e8400-e29b-41d4-a716-446655440000"
+                    message: "You have 3 tasks:\n1. Buy groceries (incomplete)\n2. Finish report (incomplete)\n3. Call dentist (completed)"
+                    tool_calls:
+                      - tool_name: "list_tasks"
+                        input:
+                          user_id: "user-uuid"
+                        output:
+                          success: true
+                          data:
+                            tasks:
+                              - task_id: "task-uuid-1"
+                                title: "Buy groceries"
+                                completed: false
+                              - task_id: "task-uuid-2"
+                                title: "Finish report"
+                                completed: false
+                              - task_id: "task-uuid-3"
+                                title: "Call dentist"
+                                completed: true
+                        success: true
+        '400':
+          description: Bad request - invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                emptyMessage:
+                  summary: Empty message
+                  value:
+                    error: "Message cannot be empty"
+                    code: "INVALID_INPUT"
+        '401':
+          description: Unauthorized - missing or invalid authentication token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                missingToken:
+                  summary: Missing Bearer token
+                  value:
+                    error: "Authentication required"
+                    code: "UNAUTHORIZED"
+        '404':
+          description: Not found - conversation does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                conversationNotFound:
+                  summary: Conversation not found
+                  value:
+                    error: "Conversation not found"
+                    code: "NOT_FOUND"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                databaseError:
+                  summary: Database connection failure
+                  value:
+                    error: "An internal error occurred. Please try again later."
+                    code: "INTERNAL_ERROR"
+        '503':
+          description: Service unavailable - external service (OpenAI API) failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              examples:
+                openaiError:
+                  summary: OpenAI API unavailable
+                  value:
+                    error: "AI service temporarily unavailable. Please try again later."
+                    code: "SERVICE_UNAVAILABLE"
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Bearer token from Better Auth authentication system.
+        Include in Authorization header: `Authorization: Bearer <token>`
+
+  schemas:
+    ChatRequest:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 10000
+          description: User's message to the AI chatbot
+          example: "Add a task to buy groceries"
+        conversation_id:
+          type: string
+          format: uuid
+          nullable: true
+          description: |
+            UUID of existing conversation to continue.
+            If null or omitted, a new conversation is created.
+          example: "550e8400-e29b-41d4-a716-446655440000"
+
+    ChatResponse:
+      type: object
+      required:
+        - conversation_id
+        - message
+      properties:
+        conversation_id:
+          type: string
+          format: uuid
+          description: UUID of the conversation (new or existing)
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        message:
+          type: string
+          description: AI agent's response message
+          example: "I've created a task to buy groceries for you."
+        tool_calls:
+          type: array
+          description: |
+            List of MCP tool calls executed during this request.
+            Included for transparency and auditability.
+            May be empty if no tools were called (e.g., conversational response).
+          items:
+            $ref: '#/components/schemas/ToolCall'
+
+    ToolCall:
+      type: object
+      required:
+        - tool_name
+        - input
+        - output
+        - success
+      properties:
+        tool_name:
+          type: string
+          enum:
+            - create_task
+            - list_tasks
+            - update_task
+            - complete_task
+            - delete_task
+          description: Name of the MCP tool that was invoked
+          example: "create_task"
+        input:
+          type: object
+          description: Input parameters passed to the tool
+          example:
+            title: "buy groceries"
+            user_id: "user-uuid"
+        output:
+          type: object
+          description: Output returned by the tool
+          example:
+            success: true
+            data:
+              task_id: "task-uuid"
+              title: "buy groceries"
+        success:
+          type: boolean
+          description: Whether the tool execution succeeded
+          example: true
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - code
+      properties:
+        error:
+          type: string
+          description: Human-readable error message
+          example: "Message cannot be empty"
+        code:
+          type: string
+          description: Machine-readable error code
+          enum:
+            - INVALID_INPUT
+            - UNAUTHORIZED
+            - FORBIDDEN
+            - NOT_FOUND
+            - INTERNAL_ERROR
+            - SERVICE_UNAVAILABLE
+          example: "INVALID_INPUT"
+
+tags:
+  - name: Chat
+    description: Conversational AI chatbot endpoints

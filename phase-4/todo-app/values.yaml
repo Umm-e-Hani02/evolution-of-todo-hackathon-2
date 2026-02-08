@@ -1,0 +1,176 @@
+# Phase-4 Todo App Helm Chart Values for Minikube
+# Backend and Frontend configuration
+
+# Global settings
+global:
+  # Minikube-specific settings
+  minikube: true
+
+# Backend configuration
+backend:
+  enabled: true
+  replicaCount: 1
+
+  image:
+    repository: phase4-backend
+    pullPolicy: Never  # Use local image in Minikube
+    tag: "latest"
+
+  service:
+    type: NodePort
+    port: 8000
+    nodePort: 30800  # Access backend at minikube-ip:30800
+
+  env:
+    - name: DATABASE_URL
+      value: "sqlite:///./data/phase4.db"
+    - name: OPENAI_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: todo-app-secrets
+          key: openai-api-key
+    - name: OPENAI_MODEL
+      value: "meta-llama/llama-3.2-3b-instruct:free"
+    - name: JWT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: todo-app-secrets
+          key: jwt-secret
+    - name: JWT_ALGORITHM
+      value: "HS256"
+    - name: JWT_EXPIRATION_HOURS
+      value: "24"
+    - name: CORS_ORIGINS
+      value: "http://localhost:30300,http://localhost:3000"
+    - name: HOST
+      value: "0.0.0.0"
+    - name: PORT
+      value: "8000"
+    - name: DEBUG
+      value: "true"
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 8000
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: 8000
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+  persistence:
+    enabled: true
+    storageClass: standard
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    mountPath: /app/data
+
+# Frontend configuration
+frontend:
+  enabled: true
+  replicaCount: 1
+
+  image:
+    repository: phase4-frontend
+    pullPolicy: Never  # Use local image in Minikube
+    tag: "latest"
+
+  service:
+    type: NodePort
+    port: 3000
+    nodePort: 30300  # Access frontend at minikube-ip:30300
+
+  env:
+    - name: NEXT_PUBLIC_API_URL
+      value: "http://localhost:30800"  # Backend NodePort URL
+    - name: NODE_ENV
+      value: "production"
+
+  resources:
+    limits:
+      cpu: 300m
+      memory: 256Mi
+    requests:
+      cpu: 150m
+      memory: 128Mi
+
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 3000
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 3000
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
+
+# Secrets (will be created separately)
+secrets:
+  # These should be set via --set or separate secret file
+  openaiApiKey: ""  # Set via: --set secrets.openaiApiKey=your-key
+  jwtSecret: "super-secret-jwt-key-change-in-production"
+
+# Service Account
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ""
+
+# Pod annotations and labels
+podAnnotations: {}
+podLabels: {}
+
+# Security contexts
+podSecurityContext: {}
+securityContext: {}
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}
+
+# Ingress (optional - for advanced Minikube setup)
+ingress:
+  enabled: false
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: todo-app.local
+      paths:
+        - path: /api
+          pathType: Prefix
+          backend: backend
+        - path: /
+          pathType: Prefix
+          backend: frontend
+  tls: []
