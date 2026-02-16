@@ -4,20 +4,23 @@ This module provides functions for displaying the main menu and
 getting validated user input for menu choices.
 """
 
-from .colors import BOLD, PINK, SECONDARY, ACCENT, SUCCESS, ERROR, WARNING, MUTED, BORDER, RESET
+from .colors import BOLD, PRIMARY, MENU_NUMBER, ACCENT, SUCCESS, ERROR, WARNING, MUTED, RESET
 
 
 def display_menu() -> None:
     """Display the main application menu with numbered options."""
-    print(f"\n  {BOLD}{PINK}┌──────────────────┐{RESET}")
-    print(f"  {BOLD}{PINK}│       Menu       │{RESET}")
-    print(f"  {BOLD}{PINK}└──────────────────┘{RESET}")
-    print(f"  {SECONDARY}1){RESET} {SUCCESS}Add Task{RESET}")
-    print(f"  {SECONDARY}2){RESET} {ACCENT}View Tasks{RESET}")
-    print(f"  {SECONDARY}3){RESET} {WARNING}Update Task{RESET}")
-    print(f"  {SECONDARY}4){RESET} {ERROR}Delete Task{RESET}")
-    print(f"  {SECONDARY}5){RESET} {PINK}Mark Complete{RESET}")
-    print(f"  {SECONDARY}6){RESET} {MUTED}Exit{RESET}")
+    print(f"\n  {BOLD}{PRIMARY}+----------------------------------+{RESET}")
+    print(f"  {BOLD}{PRIMARY}|{RESET}              {BOLD}MENU{RESET}                {BOLD}{PRIMARY}|{RESET}")
+    print(f"  {BOLD}{PRIMARY}+----------------------------------+{RESET}")
+    print(f"  {BOLD}{PRIMARY}|{RESET}                                  {BOLD}{PRIMARY}|{RESET}")
+    print(f"  {BOLD}{PRIMARY}|{RESET}    {MENU_NUMBER}1.{RESET}  {SUCCESS}Add Task{RESET}                 {BOLD}{PRIMARY}|{RESET}")
+    print(f"  {BOLD}{PRIMARY}|{RESET}    {MENU_NUMBER}2.{RESET}  {PRIMARY}View Tasks{RESET}               {BOLD}{PRIMARY}|{RESET}")
+    print(f"  {BOLD}{PRIMARY}|{RESET}    {MENU_NUMBER}3.{RESET}  {ACCENT}Update Task{RESET}              {BOLD}{PRIMARY}|{RESET}")
+    print(f"  {BOLD}{PRIMARY}|{RESET}    {MENU_NUMBER}4.{RESET}  {ERROR}Delete Task{RESET}              {BOLD}{PRIMARY}|{RESET}")
+    print(f"  {BOLD}{PRIMARY}|{RESET}    {MENU_NUMBER}5.{RESET}  {SUCCESS}Mark Complete{RESET}            {BOLD}{PRIMARY}|{RESET}")
+    print(f"  {BOLD}{PRIMARY}|{RESET}    {MENU_NUMBER}6.{RESET}  {MUTED}Exit{RESET}                     {BOLD}{PRIMARY}|{RESET}")
+    print(f"  {BOLD}{PRIMARY}|{RESET}                                  {BOLD}{PRIMARY}|{RESET}")
+    print(f"  {BOLD}{PRIMARY}+----------------------------------+{RESET}")
     print()
 
 

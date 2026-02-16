@@ -16,7 +16,7 @@ from .cli.handlers import (
     handle_delete_task,
     handle_mark_complete,
 )
-from .cli.colors import BOLD, PINK, SUCCESS, WARNING, MUTED, SUBTITLE, RESET
+from .cli.colors import BOLD, PRIMARY, SUCCESS, WARNING, MUTED, TEXT_SECONDARY, RESET
 
 
 def signal_handler(sig, frame):
@@ -29,10 +29,9 @@ def signal_handler(sig, frame):
     Note:
         This ensures the application exits cleanly when interrupted.
     """
-    print(f"\n\n{SUCCESS}Thank you for using Todo Application!{RESET}")
-    print(f"  {WARNING}Data will be lost when the program exits.{RESET}")
-    print(f"\n  {SUBTITLE}Goodbye!{RESET}")
-    print()
+    print(f"\n\n  {SUCCESS}[+] Thank you for using Todo Application!{RESET}")
+    print(f"  {WARNING}[!] Data will be lost when the program exits.{RESET}")
+    print(f"\n  {TEXT_SECONDARY}Goodbye!{RESET}\n")
     sys.exit(0)
 
 
@@ -46,13 +45,15 @@ def main() -> None:
     signal.signal(signal.SIGINT, signal_handler)
 
     # Display welcome message
-    print(f"\n  {BOLD}{PINK}┌───────────────────────────────────────────────┐{RESET}")
-    print(f"  {BOLD}{PINK}│{RESET} {BOLD}{PINK}Welcome to Todo Application!{RESET}  {SUBTITLE}In-Memory Todo Manager{RESET} {BOLD}{PINK}│{RESET}")
-    print(f"  {BOLD}{PINK}├───────────────────────────────────────────────┤{RESET}")
-    print(f"  {BOLD}{PINK}│{RESET} {BOLD}Hello!{RESET}                                                {BOLD}{PINK}│{RESET}")
-    print(f"  {BOLD}{PINK}│{RESET} {MUTED}Tasks are stored in memory only and will be lost on exit.{RESET} {BOLD}{PINK}│{RESET}")
-    print(f"  {BOLD}{PINK}└───────────────────────────────────────────────┘{RESET}")
-    print()
+    print(f"\n  {BOLD}{PRIMARY}+-------------------------------------------------------+{RESET}")
+    print(f"  {BOLD}{PRIMARY}|{RESET}                {BOLD}TODO APPLICATION{RESET}                    {BOLD}{PRIMARY}|{RESET}")
+    print(f"  {BOLD}{PRIMARY}|{RESET}            {TEXT_SECONDARY}In-Memory Task Manager{RESET}                {BOLD}{PRIMARY}|{RESET}")
+    print(f"  {BOLD}{PRIMARY}+-------------------------------------------------------+{RESET}")
+    print(f"  {BOLD}{PRIMARY}|{RESET}                                                       {BOLD}{PRIMARY}|{RESET}")
+    print(f"  {BOLD}{PRIMARY}|{RESET}  {BOLD}Welcome!{RESET}                                              {BOLD}{PRIMARY}|{RESET}")
+    print(f"  {BOLD}{PRIMARY}|{RESET}  {MUTED}Tasks are stored in memory and will be lost on exit.{RESET}  {BOLD}{PRIMARY}|{RESET}")
+    print(f"  {BOLD}{PRIMARY}|{RESET}                                                       {BOLD}{PRIMARY}|{RESET}")
+    print(f"  {BOLD}{PRIMARY}+-------------------------------------------------------+{RESET}")
 
     # Initialize service
     service = TodoService()
@@ -79,10 +80,9 @@ def main() -> None:
             handle_mark_complete(service)
         elif choice == 6:
             # Exit
-            print(f"\n  {SUCCESS}Thank you for using Todo Application!{RESET}")
-            print(f"  {WARNING}Data will be lost when the program exits.{RESET}")
-            print(f"\n  {SUBTITLE}Goodbye!{RESET}")
-            print()
+            print(f"\n  {SUCCESS}[+] Thank you for using Todo Application!{RESET}")
+            print(f"  {WARNING}[!] Data will be lost when the program exits.{RESET}")
+            print(f"\n  {TEXT_SECONDARY}Goodbye!{RESET}\n")
             break
 
 

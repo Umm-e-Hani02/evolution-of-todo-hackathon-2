@@ -1,62 +1,44 @@
-"""Elegant, minimal ANSI color codes for terminal output.
+"""Modern, professional ANSI color codes for terminal output.
 
-Uses a carefully curated palette that's easy on the eyes while
-maintaining good readability and semantic meaning.
+A cohesive color palette designed for excellent readability and
+visual hierarchy in CLI applications.
 """
 
-# Reset
+# Reset and styling
 RESET = "\033[0m"
-
-# Text styling
 BOLD = "\033[1m"
 DIM = "\033[2m"
+ITALIC = "\033[3m"
 
-# Soft pink theme for minimal professional CLI
-PINK = "\033[38;5;205m"        # Soft pink (headers, titles, accents)
-PINK_LIGHT = "\033[38;5;218m"  # Light pink (subtle highlights)
-PINK_DARK = "\033[38;5;162m"   # Dark pink (emphasis)
+# Primary brand colors - Modern blue/cyan palette
+PRIMARY = "\033[38;5;39m"       # Vibrant blue (main brand color)
+PRIMARY_LIGHT = "\033[38;5;117m"  # Light blue (subtle highlights)
+PRIMARY_DARK = "\033[38;5;27m"    # Deep blue (emphasis)
 
-# Secondary colors for balance
-SECONDARY = "\033[38;5;252m"    # Light gray (menu options)
-ACCENT = "\033[38;5;226m"       # Yellow (interactive prompts)
+# Accent color for interactive elements
+ACCENT = "\033[38;5;214m"       # Warm orange (prompts, highlights)
 
-# Semantic colors for meaningful feedback
-SUCCESS = "\033[38;5;46m"      # Green (success messages)
-WARNING = "\033[38;5;220m"     # Orange-yellow (warnings)
-ERROR = "\033[38;5;196m"       # Red (errors)
-INFO = "\033[38;5;252m"        # Light gray (info)
+# Semantic colors with improved contrast
+SUCCESS = "\033[38;5;42m"       # Bright green (success, completed)
+WARNING = "\033[38;5;220m"      # Amber (warnings, caution)
+ERROR = "\033[38;5;196m"        # Bright red (errors, delete)
+INFO = "\033[38;5;117m"         # Light blue (informational)
 
-# Neutral colors for hierarchy
-TITLE = "\033[38;5;205m"       # Soft pink (main titles)
-SUBTITLE = "\033[38;5;242m"    # Medium gray (subtitles)
-MUTED = "\033[38;5;244m"       # Gray (muted text)
-BORDER = "\033[38;5;240m"      # Dark gray (borders, lines)
+# Neutral hierarchy colors
+TITLE = "\033[38;5;39m"         # Vibrant blue (main titles)
+SUBTITLE = "\033[38;5;250m"     # Light gray (subtitles)
+MUTED = "\033[38;5;243m"        # Medium gray (muted text)
+BORDER = "\033[38;5;240m"       # Dark gray (borders, separators)
+
+# Text colors for content
+TEXT_PRIMARY = "\033[38;5;255m"   # White (primary text)
+TEXT_SECONDARY = "\033[38;5;250m" # Light gray (secondary text)
+MENU_NUMBER = "\033[38;5;67m"     # Soft blue-gray (menu numbers)
 
 # Task status colors
-TASK_DONE = "\033[38;5;46m"    # Green (completed tasks)
-TASK_PENDING = "\033[38;5;252m" # Light gray (pending tasks)
+TASK_DONE = "\033[38;5;42m"     # Bright green (completed)
+TASK_PENDING = "\033[38;5;250m" # Light gray (pending)
 
-# Alternative accent colors
-ACCENT_BLUE = "\033[38;5;33m"
-ACCENT_CYAN = "\033[38;5;51m"
-WHITE = "\033[38;5;255m"
-BLACK = "\033[38;5;16m"
-
-# Alternative accent colors for variety
-ACCENT_BLUE = "\033[38;5;33m"  # Strong blue
-ACCENT_PINK = "\033[38;5;205m" # Bright pink
-ACCENT_CYAN = "\033[38;5;51m"  # Bright cyan
-
-# Common aliases for convenience
-RED = "\033[38;5;196m"         # Bright red
-GREEN = "\033[38;5;46m"        # Bright green
-YELLOW = "\033[38;5;226m"      # Bright yellow
-BLUE = "\033[38;5;33m"         # Strong blue
-MAGENTA = "\033[38;5;201m"     # Bright magenta
-CYAN = "\033[38;5;51m"         # Bright cyan
-WHITE = "\033[38;5;255m"       # Bright white
-BLACK = "\033[38;5;16m"        # Black
-
-# Background simulation using indentation and color blocks
-BG_HEADER = "\033[38;5;22m"    # Dark green background simulation
-BG_MENU = "\033[38;5;235m"     # Dark gray background simulation
+# Legacy aliases for backward compatibility
+PINK = PRIMARY                   # Map old pink to new primary
+SECONDARY = TEXT_SECONDARY       # Map old secondary to text secondary
