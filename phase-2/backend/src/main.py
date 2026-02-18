@@ -1,11 +1,16 @@
 """FastAPI application entry point with fixed CORS for Vercel and localhost."""
 
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from sqlmodel import Session
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 from src.core.config import settings
 from src.core.database import init_db, get_db
+from src.core.rate_limit import limiter
 from src.api import auth, todos
 from src.models import User, TodoTask
 
@@ -31,6 +36,21 @@ app = FastAPI(
     lifespan=lifespan
 )
 print("FastAPI application created successfully")
+
+# Add rate limiter state and exception handler
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+# Custom validation error handler for friendly 422 messages
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Convert validation errors to user-friendly messages."""
+    return JSONResponse(
+        status_code=422,
+        content={
+            "detail": "Invalid input. Please fill all required fields correctly and ensure your email is valid."
+        }
+    )
 
 # Configure CORS with validation
 cors_origins_input = settings.cors_origins

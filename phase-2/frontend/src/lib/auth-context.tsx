@@ -45,19 +45,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = await authAPI.login(email, password);
-    tokenManager.setToken(response.token);
-    tokenManager.setUser(response.user);
-    setUser(response.user);
-    router.push('/dashboard');
+    try {
+      const response = await authAPI.login(email, password);
+      tokenManager.setToken(response.token);
+      tokenManager.setUser(response.user);
+      setUser(response.user);
+      router.push('/dashboard');
+    } catch (error) {
+      // Re-throw the error so the form can display it
+      throw error;
+    }
   };
 
   const register = async (email: string, password: string) => {
-    const response = await authAPI.register(email, password);
-    tokenManager.setToken(response.token);
-    tokenManager.setUser(response.user);
-    setUser(response.user);
-    router.push('/dashboard');
+    try {
+      const response = await authAPI.register(email, password);
+      tokenManager.setToken(response.token);
+      tokenManager.setUser(response.user);
+      setUser(response.user);
+      router.push('/dashboard');
+    } catch (error) {
+      // Re-throw the error so the form can display it
+      throw error;
+    }
   };
 
   const logout = () => {

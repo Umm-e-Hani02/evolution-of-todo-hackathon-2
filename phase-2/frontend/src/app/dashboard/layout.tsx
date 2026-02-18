@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
+import "../dashboard-styles.css";
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (

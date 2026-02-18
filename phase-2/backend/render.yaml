@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: evolution-todo-phase2-backend
+    env: python
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn src.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_ALGORITHM
+        value: HS256
+      - key: JWT_EXPIRATION_HOURS
+        value: 24
+      - key: CORS_ORIGINS
+        sync: false
+      - key: DEBUG
+        value: false
