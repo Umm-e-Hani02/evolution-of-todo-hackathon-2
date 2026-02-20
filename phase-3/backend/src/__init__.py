@@ -1,1 +1,1 @@
-"""Phase III AI Chatbot - Main package."""
+# Phase 2 Backend Package

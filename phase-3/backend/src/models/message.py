@@ -1,38 +1,36 @@
-"""Message model for Phase-3 AI Chatbot."""
+"""Message model for chat message persistence."""
 from datetime import datetime, timezone
-from enum import Enum
 from typing import Optional
 from sqlmodel import SQLModel, Field, Relationship
-from uuid import uuid4
-
-
-class MessageRole(str, Enum):
-    """Enum for message roles in conversation."""
-    USER = "user"
-    ASSISTANT = "assistant"
 
 
 class Message(SQLModel, table=True):
-    """Message entity representing a single message in a conversation."""
-
+    """Message entity for storing individual chat messages."""
     __tablename__ = "messages"
 
-    id: str = Field(
-        default_factory=lambda: str(uuid4()),
+    id: int = Field(
+        default=None,
         primary_key=True,
         description="Unique identifier for the message",
     )
-    conversation_id: str = Field(
+    user_id: str = Field(
+        foreign_key="users.id",
+        ondelete="CASCADE",
+        index=True,
+        description="Reference to owning user",
+    )
+    conversation_id: int = Field(
         foreign_key="conversations.id",
         ondelete="CASCADE",
-        description="Reference to the parent conversation",
+        index=True,
+        description="Reference to parent conversation",
     )
-    role: MessageRole = Field(
-        description="The role of the message sender (user or assistant)"
+    role: str = Field(
+        max_length=20,
+        description="Message role: 'user' or 'assistant'",
     )
     content: str = Field(
-        max_length=5000,
-        description="The content of the message",
+        description="Message content text",
     )
     created_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
@@ -41,6 +39,9 @@ class Message(SQLModel, table=True):
 
     # Relationships
     conversation: "Conversation" = Relationship(
+        back_populates="messages",
+    )
+    user: "User" = Relationship(
         back_populates="messages",
     )
 

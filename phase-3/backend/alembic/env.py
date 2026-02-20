@@ -1,4 +1,4 @@
-"""Alembic environment configuration for Phase-3."""
+"""Alembic environment configuration."""
 from logging.config import fileConfig
 import os
 
@@ -6,11 +6,11 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
 
-# Import SQLModel metadata from the Phase-3 application
+# Import SQLModel metadata from the application
 from src.models import SQLModel
 
 # Determine the database URL from environment
-database_url = os.getenv("DATABASE_URL", "sqlite:///./phase3_local.db")
+database_url = os.getenv("DATABASE_URL", "sqlite:///./local.db")
 
 # Alembic Config object
 config = context.config

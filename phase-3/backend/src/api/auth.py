@@ -1,8 +1,9 @@
 """Authentication API endpoints."""
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlmodel import Session, select
 from src.core.database import get_db
 from src.core.security import hash_password, verify_password, create_access_token, get_token_expiry_hours
+from src.core.rate_limit import limiter
 from src.models.user import User
 from src.schemas.user import UserCreate, UserLogin, UserResponse, TokenResponse
 from src.deps import get_current_user
@@ -24,7 +25,7 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)) -> TokenRespo
         if existing:
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail="Email already registered",
+                detail="This email is already registered. Please log in or use a different email.",
             )
 
         # Create new user
@@ -60,8 +61,9 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)) -> TokenRespo
     response_model=TokenResponse,
     summary="Login user",
 )
-def login(credentials: UserLogin, db: Session = Depends(get_db)) -> TokenResponse:
-    """Authenticate user and return JWT token."""
+@limiter.limit("5/minute")
+def login(request: Request, credentials: UserLogin, db: Session = Depends(get_db)) -> TokenResponse:
+    """Authenticate user and return JWT token. Limited to 5 attempts per minute per IP."""
     try:
         # Find user by email
         user = db.exec(select(User).where(User.email == credentials.email)).first()
@@ -69,14 +71,14 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)) -> TokenRespons
             # Generic error message to prevent email enumeration
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid email or password",
+                detail="Invalid email or password. Please try again.",
             )
 
         # Verify password
         if not verify_password(credentials.password, user.password_hash):
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid email or password",
+                detail="Invalid email or password. Please try again.",
             )
 
         # Generate JWT token

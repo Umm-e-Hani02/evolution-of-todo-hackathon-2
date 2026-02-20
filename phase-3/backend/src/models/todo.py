@@ -7,7 +7,6 @@ from uuid import uuid4
 
 class TodoTask(SQLModel, table=True):
     """Todo task entity owned by a single user."""
-    __tablename__ = "todotask"
 
     id: str = Field(
         default_factory=lambda: str(uuid4()),
@@ -15,7 +14,8 @@ class TodoTask(SQLModel, table=True):
         description="Unique identifier for the task",
     )
     user_id: str = Field(
-        foreign_key="user.id",
+        foreign_key="users.id",
+        ondelete="CASCADE",
         description="Reference to owning user",
     )
     title: str = Field(

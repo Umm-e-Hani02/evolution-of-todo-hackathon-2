@@ -1,92 +1,48 @@
-"""complete_task MCP tool for Phase-3 AI Chatbot.
-
-This tool marks a todo task as completed for the authenticated user by interfacing with the shared todo functionality.
-"""
+"""MCP tool for completing tasks."""
 from typing import Dict, Any
-from uuid import UUID
 from sqlmodel import Session, select
-from ...models.todo import TodoTask  # Import from Phase-3 models (same as Phase-2)
+from src.models.todo import TodoTask
+from datetime import datetime, timezone
 
 
-# OpenAI function definition for complete_task tool
-complete_task_tool = {
-    "type": "function",
-    "function": {
-        "name": "complete_task",
-        "description": "Mark a todo task as completed for the user",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "task_id": {
-                    "type": "string",
-                    "description": "The ID of the task to mark as completed"
-                }
-            },
-            "required": ["task_id"]
-        }
-    }
-}
-
-
-def complete_task(session: Session, user_id: str, task_id: str) -> Dict[str, Any]:
+def complete_task(user_id: str, task_id: str, db: Session = None) -> Dict[str, Any]:
     """
-    Mark a todo task as completed for the user.
+    Mark a task as completed.
 
     Args:
-        session: Database session
-        user_id: User ID (string format from authentication)
-        task_id: ID of the task to mark as completed
+        user_id: User ID who owns the task
+        task_id: Task ID to complete
+        db: Database session
 
     Returns:
-        Dict with success status and updated task data or error message
+        Dict with success status and task details
     """
-    try:
-        # Validate task_id
-        try:
-            UUID(task_id)  # Validate UUID format
-        except ValueError:
-            return {
-                "success": False,
-                "error": "Invalid task ID format"
-            }
+    if not db:
+        return {"success": False, "error": "Database session required"}
 
-        # Find task
+    try:
         statement = select(TodoTask).where(
             TodoTask.id == task_id,
             TodoTask.user_id == user_id
         )
-        task = session.exec(statement).first()
+        task = db.exec(statement).first()
 
         if not task:
-            return {
-                "success": False,
-                "error": "Task not found or you don't have permission to update it"
-            }
+            return {"success": False, "error": "Task not found"}
 
-        # Mark as completed
         task.completed = True
-        
-        # Update timestamp
-        from datetime import datetime, timezone
         task.updated_at = datetime.now(timezone.utc)
 
-        session.add(task)
-        session.commit()
-        session.refresh(task)
+        db.add(task)
+        db.commit()
+        db.refresh(task)
 
         return {
             "success": True,
-            "data": {
-                "task_id": str(task.id),
-                "title": task.title,
-                "completed": task.completed,
-                "updated_at": task.updated_at.isoformat()
-            }
+            "task_id": task.id,
+            "title": task.title,
+            "completed": task.completed
         }
-
     except Exception as e:
-        session.rollback()
-        return {
-            "success": False,
-            "error": f"Failed to complete task: {str(e)}"
-        }
+        db.rollback()
+        return {"success": False, "error": str(e)}

@@ -1,13 +1,19 @@
-"""FastAPI application entry point for Phase-3 AI Chatbot."""
+"""FastAPI application entry point with fixed CORS for Vercel and localhost."""
+
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-
-from .core.config import settings
-from .core.database import init_db
-from .api import auth, todos
-from .api.chat import router as chat_router
-
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from sqlmodel import Session
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
+from src.core.config import settings
+from src.core.database import init_db, get_db
+from src.core.rate_limit import limiter
+from src.api import auth, todos
+from src.api import chat as chat_api
+from src.models import User, TodoTask, Conversation, Message
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -20,12 +26,11 @@ async def lifespan(app: FastAPI):
         raise
     yield
 
-
-# Create FastAPI application - matches Phase-2 structure
-print("Creating FastAPI application for Phase-3...")
+# Create FastAPI application
+print("Creating FastAPI application...")
 app = FastAPI(
-    title="Todo AI Chatbot API - Phase III",
-    description="AI-powered chatbot API for multi-user todo application with conversation history",
+    title="Todo API - Phase II",
+    description="REST API for multi-user todo application with JWT authentication",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
@@ -33,8 +38,22 @@ app = FastAPI(
 )
 print("FastAPI application created successfully")
 
+# Add rate limiter state and exception handler
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-# Configure CORS - matches Phase-2 pattern
+# Custom validation error handler for friendly 422 messages
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Convert validation errors to user-friendly messages."""
+    return JSONResponse(
+        status_code=422,
+        content={
+            "detail": "Invalid input. Please fill all required fields correctly and ensure your email is valid."
+        }
+    )
+
+# Configure CORS with validation
 cors_origins_input = settings.cors_origins
 print(f"Raw CORS origins from settings: {cors_origins_input}")
 
@@ -49,12 +68,11 @@ print(f"Final CORS origins: {cors_origins}")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=cors_origins,        # exact match domains
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],               # allow all methods including OPTIONS
+    allow_headers=["*"],               # allow all headers
 )
-
 
 # Include routers
 print("Including auth router...")
@@ -62,23 +80,27 @@ app.include_router(auth.router)
 print("Including todos router...")
 app.include_router(todos.router)
 print("Including chat router...")
-app.include_router(chat_router)
+app.include_router(chat_api.router)
 print("Routers included successfully")
 
-
+# Health check endpoints
 @app.get("/health", tags=["Health"])
 def health_check() -> dict:
-    """Health check endpoint."""
-    return {"status": "healthy", "version": "3.0.0", "service": "Phase-3 AI Chatbot"}
+    return {"status": "healthy", "version": "1.0.0"}
 
+@app.get("/ready", tags=["Health"])
+def readiness_check(db: Session = Depends(get_db)) -> dict:
+    try:
+        db.execute("SELECT 1")
+        return {"status": "ready", "database": "connected", "version": "1.0.0"}
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Database not ready: {str(e)}")
 
+# Root endpoint
 @app.get("/", tags=["Root"])
 def root() -> dict:
-    """Root endpoint with API information."""
     return {
-        "name": "Todo AI Chatbot API - Phase III",
-        "version": "3.0.0",
-        "description": "AI-powered chatbot for todo management",
+        "name": "Todo API - Phase II",
+        "version": "1.0.0",
         "docs": "/docs",
-        "chat_endpoint": "/api/chat"
     }

@@ -1,4 +1,4 @@
-# Core dependencies - same as Phase-2
+# Core dependencies
 fastapi>=0.100.0
 uvicorn[standard]>=0.23.0
 sqlmodel>=0.0.0
@@ -6,29 +6,26 @@ pydantic>=2.0.0
 pydantic-settings>=2.0.0
 pydantic[email]>=2.0.0
 
-# Security - same as Phase-2
+# Security
 python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4
 python-multipart>=0.0.6
 
-# Database - same as Phase-2
+# Rate limiting
+slowapi>=0.1.9
+
+# Database
 psycopg[binary,pool]>=3.1.0
 psycopg2-binary>=2.9.0
+alembic>=1.13.0
 
-# Testing - same as Phase-2
+# Testing
 pytest>=7.4.0
 pytest-asyncio>=0.21.0
 httpx>=0.24.0
 
-# Email validation - same as Phase-2
+# Email validation
 email-validator>=2.0.0
 
-# Phase-3 specific: AI and MCP
-openai>=1.10.0
-mcp>=0.1.0
-
-# Phase-3 specific: Database migrations
-alembic>=1.12.0
-
-# Phase-3 specific: Environment variables
-python-dotenv>=1.0.0
+# AI/LLM
+openai>=1.0.0

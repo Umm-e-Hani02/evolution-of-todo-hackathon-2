@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: evolution-todo-phase3-backend
+    name: evolution-todo-phase2-backend
     env: python
     region: oregon
     plan: free
@@ -18,9 +18,5 @@ services:
         value: 24
       - key: CORS_ORIGINS
         sync: false
-      - key: OPENAI_API_KEY
-        sync: false
-      - key: OPENAI_MODEL
-        value: meta-llama/llama-3.2-3b-instruct:free
       - key: DEBUG
         value: false

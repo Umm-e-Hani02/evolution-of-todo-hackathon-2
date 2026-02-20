@@ -28,15 +28,38 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Clear token and redirect to login
+    // Extract friendly error message from response
+    let errorMessage = 'An unexpected error occurred. Please try again.';
+
+    if (error.response?.data?.detail) {
+      // Backend returns error in 'detail' field
+      errorMessage = error.response.data.detail;
+    } else if (error.response?.status === 401) {
+      errorMessage = 'Invalid email or password. Please try again.';
+    } else if (error.response?.status === 409) {
+      errorMessage = 'This email is already registered. Please log in or use a different email.';
+    } else if (error.response?.status === 422) {
+      errorMessage = 'Invalid input. Please fill all required fields correctly and ensure your email is valid.';
+    } else if (error.response?.status === 429) {
+      errorMessage = 'Too many login attempts. Please wait a moment and try again.';
+    } else if (error.response?.status === 500) {
+      errorMessage = 'Server error. Please try again later.';
+    } else if (error.message === 'Network Error') {
+      errorMessage = 'Unable to connect to the server. Please check your internet connection.';
+    }
+
+    // For 401 errors on protected routes, redirect to login
+    if (error.response?.status === 401 && !error.config?.url?.includes('/auth/')) {
       if (typeof window !== 'undefined') {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         window.location.href = '/login';
       }
     }
-    return Promise.reject(error);
+
+    // Create a new error with the friendly message
+    const friendlyError = new Error(errorMessage);
+    return Promise.reject(friendlyError);
   }
 );
 
@@ -70,7 +93,7 @@ export const todosAPI = {
     return response.data;
   },
 
-  create: async (data: CreateTodoData): Promise<TodoTask> => {
+  addTodo: async (data: CreateTodoData): Promise<TodoTask> => {
     const response = await api.post<TodoTask>('/todos', data);
     return response.data;
   },
@@ -89,8 +112,20 @@ export const todosAPI = {
     await api.delete(`/todos/${id}`);
   },
 
-  chat: async (data: { message: string; conversation_id?: string }): Promise<any> => {
+  chat: async (data: { message: string; conversation_id?: number }): Promise<{
+    conversation_id: number;
+    response: string;
+    tool_calls: Array<{ tool: string; arguments: any; result: any }>;
+  }> => {
     const response = await api.post('/api/chat', data);
+    return response.data;
+  },
+
+  getConversationHistory: async (conversationId: number): Promise<{
+    conversation_id: number;
+    messages: Array<{ id: number; role: string; content: string; created_at: string }>;
+  }> => {
+    const response = await api.get(`/api/conversations/${conversationId}/messages`);
     return response.data;
   },
 };

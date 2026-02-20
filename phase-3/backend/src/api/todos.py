@@ -1,7 +1,8 @@
 """Todo CRUD API endpoints."""
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlmodel import Session, select
 from src.core.database import get_db
+from src.core.rate_limit import limiter
 from src.models.user import User
 from src.models.todo import TodoTask
 from src.schemas.todo import TodoCreate, TodoUpdate, TodoResponse
@@ -31,7 +32,9 @@ def list_todos(
     status_code=status.HTTP_201_CREATED,
     summary="Create a todo",
 )
+@limiter.limit("30/minute")
 def create_todo(
+    request: Request,
     todo_data: TodoCreate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
