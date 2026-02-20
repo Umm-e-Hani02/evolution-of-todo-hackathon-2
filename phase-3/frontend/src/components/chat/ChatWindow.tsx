@@ -11,7 +11,7 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
   const { theme } = useTheme(); // Get current theme
   const [messages, setMessages] = useState<{ role: 'user' | 'assistant'; content: string }[]>([]);
   const [input, setInput] = useState('');
-  const [conversationId, setConversationId] = useState<string | undefined>(undefined);
+  const [conversationId, setConversationId] = useState<number | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -35,7 +35,7 @@ const ChatWindow = ({ onClose }: ChatWindowProps) => {
     try {
       const response = await todosAPI.chat({ message: input, conversation_id: conversationId });
       setConversationId(response.conversation_id);
-      const assistantMessage = { role: 'assistant' as const, content: response.message };
+      const assistantMessage = { role: 'assistant' as const, content: response.response };
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Chat Error:', error);
