@@ -20,7 +20,8 @@ class Settings(BaseSettings):
     debug: bool = False
 
     # CORS - required field with safe defaults for development
-    cors_origins: str = "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000"
+    # In production, set via environment variable to include your frontend URL
+    cors_origins: str = "http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,https://phase3-evolution-of-todo.vercel.app"
 
     # OpenAI API (optional - for chatbot functionality)
     openai_api_key: Optional[str] = None
