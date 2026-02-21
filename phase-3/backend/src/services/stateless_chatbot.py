@@ -40,11 +40,14 @@ class StatelessChatbotService:
                     api_key=api_key,
                     base_url="https://openrouter.ai/api/v1"
                 )
+                # Use OpenRouter model format if not explicitly set
+                self.model = os.getenv("OPENAI_MODEL", "openai/gpt-4o-mini")
             else:
                 print(f"INFO: OpenAI client initialized with key: {api_key[:20]}...")
                 self.client = OpenAI(api_key=api_key)
+                # Use standard OpenAI model format
+                self.model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
-        self.model = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
         self.intent_detector = IntentDetector()
 
     def get_or_create_conversation(
